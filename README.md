@@ -3,7 +3,7 @@
 </p>
 
 > A secure real-time platform connecting students and their communities through information. Built for the Congressional App Challenge.
-
+# PORTED TO GITHUB (11/1/2026)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-fitch--6393c.web.app-245847?style=for-the-badge&logo=firebase)](https://fitch-6393c.web.app)
 [![Firebase](https://img.shields.io/badge/Firebase-v10.8.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-Serverless-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
