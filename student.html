@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f4efe4">
+  <title>Fitch | School Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js">
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/finch.css">
+  <link rel="stylesheet" href="css/school-extras.css">
+  <link rel="icon" type="image/png" href="image/fitchLogo.png">
+  <link rel="apple-touch-icon" href="image/fitchLogo.png">
+</head>
+<body class="dashboard-page student-dashboard-page school-loading">
+  <div id="schoolLoadingScreen" class="school-loading-screen" role="status" aria-live="polite">
+    <img class="loading-mark" src="image/fitchLogo.png" alt="">
+    <span>Opening your school board...</span>
+    <small class="loading-hint">This might take a moment. Please wait...</small>
+  </div>
+  <main class="dashboard student-dashboard">
+    <div class="brand-bar dashboard-brand-bar">
+      <a class="brand-lockup" href="/" aria-label="Fitch home">
+        <img class="brand-logo" src="image/fitchLogo.png" alt="">
+      </a>
+      <span class="brand-note">THE SCHOOL COMMUNITY BOARD</span>
+    </div>
+    <header class="dashboard-header student-dashboard-header">
+      <div>
+        <p class="eyebrow">STUDENT BOARD <span class="student-header-divider" aria-hidden="true">/</span> <span id="studentNameHeading">student</span></p>
+        <h1 id="schoolNameHeading">Your school</h1>
+        <p id="schoolTagline" class="subtitle">Announcements and updates.</p>
+      </div>
+      <div class="student-header-actions">
+        <button id="switchSchoolBtn" class="secondary-button" type="button">Switch school</button>
+        <details class="translation-menu">
+          <summary aria-label="Choose board language" title="Choose board language">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+              <path d="M3.5 5.5h10m-5-2v2c0 4.2-2.1 7.1-5 9m2-6c.8 2 2.4 4.1 5 5.5M12 19l4-10 4 10m-6.4-3h4.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </summary>
+          <div class="translation-control">
+            <label class="visually-hidden" for="language-selector">Board language</label>
+            <select id="language-selector" aria-describedby="translationHint">
+              <option value="en">English (Default)</option>
+              <option value="es">Español</option>
+              <option value="pt">Português</option>
+              <option value="fr">Français</option>
+              <option value="vi">Tiếng Việt</option>
+              <option value="zh">中文 (普通话)</option>
+              <option value="ht">Kreyòl Ayisyen</option>
+              <option value="ar">العربية</option>
+              <option value="hi">हिन्दी</option>
+              <option value="ru">Русский</option>
+              <option value="ko">한국어</option>
+              <option value="tl">Tagalog</option>
+              <option value="so">Soomaali</option>
+            </select>
+            <span id="translationHint" class="translation-hint">Board text and school posts are translated online.</span>
+            <span id="interfaceTranslationStatus" class="translation-hint" role="status" aria-live="polite"></span>
+          </div>
+        </details>
+      </div>
+    </header>
+    <p id="featuresDisabledMessage" class="empty-state" hidden>Your school has turned off announcements and Q&amp;A.</p>
+
+    <nav class="school-tabs" aria-label="School sections">
+      <button class="school-tab is-active" type="button" data-tab="board" aria-controls="boardTab" aria-selected="true">Updates</button>
+      <button id="questionsTabButton" class="school-tab" type="button" data-tab="questions" aria-controls="questionsTab" aria-selected="false" hidden>Q&amp;A</button>
+      <button id="pollsTabButton" class="school-tab" type="button" data-tab="polls" aria-controls="pollsTab" aria-selected="false" hidden>Polls</button>
+      <button id="documentsTabButton" class="school-tab" type="button" data-tab="documents" aria-controls="documentsTab" aria-selected="false" hidden>Documents</button>
+    </nav>
+    <section id="boardTab" class="tab-panel is-active" data-tab-panel="board">
+      <section id="pinnedAnnouncementsSection" class="student-content-section pinned-announcements-section" aria-labelledby="pinnedAnnouncementsTitle" hidden>
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">IMPORTANT</p>
+            <h2 id="pinnedAnnouncementsTitle">From your school</h2>
+          </div>
+        </div>
+        <div id="pinnedAnnouncementList" class="announcement-list" aria-live="polite"></div>
+      </section>
+      <section id="photoComposerSection" class="student-content-section photo-composer-section" aria-labelledby="photoComposerTitle" hidden>
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">SCHOOL COMMUNITY</p>
+            <h2 id="photoComposerTitle">Share a photo</h2>
+          </div>
+        </div>
+        <form id="photo-post-form" class="photo-post-form">
+          <label for="photo-file-input">Choose an image</label>
+          <input type="file" id="photo-file-input" accept="image/*" required>
+          <label for="photo-caption">Caption <span>(optional)</span></label>
+          <textarea id="photo-caption" maxlength="2000" placeholder="Add a caption or note (Optional)..."></textarea>
+          <button id="photo-post-button" type="submit">Post Photo</button>
+          <p id="photo-post-status" class="feedback" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <section class="student-content-section photo-feed-section" aria-labelledby="photoFeedTitle">
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">SCHOOL COMMUNITY</p>
+            <h2 id="photoFeedTitle">Photos</h2>
+          </div>
+        </div>
+        <div id="photo-feed-container" class="photo-feed-container" aria-live="polite">
+          <p class="empty-state">Loading photos...</p>
+        </div>
+      </section>
+      <section id="studentCalendarSection" class="student-content-section student-calendar-section" aria-labelledby="studentCalendarTitle" hidden>
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">UPCOMING EVENTS</p>
+            <h2 id="studentCalendarTitle">School calendar</h2>
+          </div>
+        </div>
+        <div class="student-calendar-frame">
+          <iframe id="studentCalendarFrame" title="School events calendar" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </section>
+      <section id="announcementsPanel" class="student-content-section" aria-labelledby="announcementListTitle">
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">SCHOOL NEWS</p>
+            <h2 id="announcementListTitle">Latest updates</h2>
+          </div>
+        </div>
+        <div id="announcementList" class="announcement-list student-announcement-list" aria-live="polite">
+          <p class="empty-state">Loading announcements...</p>
+        </div>
+      </section>
+    </section>
+    <section id="questionsTab" class="tab-panel" data-tab-panel="questions" hidden>
+      <section class="student-content-section student-questions-section" aria-labelledby="questionsListTitle">
+        <div class="student-section-heading">
+          <div>
+            <p class="student-section-kicker">ASK &amp; ANSWER</p>
+            <h2 id="questionsListTitle">Questions from your school</h2>
+            <p class="student-section-copy">Class officers and organizers can help with answers.</p>
+          </div>
+          <details id="questionComposer" class="question-composer">
+            <summary>Ask a question</summary>
+            <form id="questionForm">
+              <input id="questionAuthorInput" type="hidden">
+              <label class="visually-hidden" for="questionContentInput">Your question</label>
+              <textarea id="questionContentInput" rows="3" maxlength="1200" required placeholder="What would you like to know?"></textarea>
+              <button id="askQuestionBtn" type="submit"><span>Post question</span><span class="button-arrow" aria-hidden="true">â†’</span></button>
+              <p id="questionStatus" class="feedback" aria-live="polite"></p>
+            </form>
+          </details>
+        </div>
+        <div id="questionsList" class="qa-list student-qa-list" aria-live="polite"><p class="empty-state">Loading questions...</p></div>
+      </section>
+    </section>
+    <section id="pollsTab" class="tab-panel" data-tab-panel="polls" hidden><div id="pollsRoot"></div></section>
+    <section id="documentsTab" class="tab-panel" data-tab-panel="documents" hidden><div id="documentsRoot"></div></section>
+  </main>
+  <script src="js/landing-motion.js" defer></script>
+    <script type="module" src="js/student.js"></script>
+    <script type="module" src="js/school-extras.js"></script>
+    <script type="module">import { initFinch } from "./js/finch.js"; initFinch();</script>
+    <script src="js/mobile-promo.js" defer></script>
+</body>
+</html>

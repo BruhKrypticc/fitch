@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#245847">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fitch">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="mobile.webmanifest">
+  <link rel="apple-touch-icon" href="image/fitchLogo.png">
+  <title>Fitch Mobile</title>
+  <link rel="icon" href="image/fitchLogo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js">
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mobile.css">
+  <link rel="stylesheet" href="css/finch.css">
+  <link rel="stylesheet" href="css/school-extras.css">
+</head>
+<body class="m-loading">
+  <div class="m-bg" aria-hidden="true"></div>
+
+  <section class="m-login" id="mLogin" aria-label="Join your school" hidden>
+    <form class="m-login-form" id="mLoginForm" novalidate>
+      <img class="m-login-logo" src="image/fitchLogo.png" alt="Fitch">
+      <h1>Join your school</h1>
+      <p class="m-login-sub">Enter the 5-character code from your school and choose your display name.</p>
+      <p class="m-privacy-note" id="mStudentGoogleNotice" hidden>This school requires sign-in with a Google account from its school email domain and uses a generated display name instead of the one you type below.</p>
+      <div class="m-field">
+        <span id="mCodeLabel">Join code</span>
+        <div class="m-code" id="mCode">
+          <div class="m-code-boxes" aria-hidden="true">
+            <i class="m-code-box"></i><i class="m-code-box"></i><i class="m-code-box"></i><i class="m-code-box"></i><i class="m-code-box"></i>
+          </div>
+          <input id="mLoginCode" class="m-code-input" type="text" aria-labelledby="mCodeLabel" autocomplete="one-time-code" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="5" inputmode="text">
+        </div>
+      </div>
+      <div class="m-field">
+        <label for="mLoginName" id="mNameLabel">Display name</label>
+        <input id="mLoginName" type="text" aria-labelledby="mNameLabel" placeholder="e.g. Jordan P." maxlength="40" autocomplete="off">
+      </div>
+      <p class="m-login-error" id="mLoginError" role="alert" aria-live="assertive"></p>
+      <button class="m-login-btn" id="mLoginBtn" type="submit">Continue</button>
+    </form>
+    <button type="button" class="m-setup-btn" id="mSetupBtn" hidden>Set up web app</button>
+    <p class="m-login-admin">School admin? <a href="admin">Log in on a browser</a></p>
+  </section>
+
+  <div class="m-setup-backdrop" id="mSetupBackdrop" hidden></div>
+  <div class="m-setup" id="mSetup" role="dialog" aria-labelledby="mSetupTitle" hidden>
+    <div class="m-sheet-grabber" aria-hidden="true"></div>
+    <h2 id="mSetupTitle">Set up Fitch as an app</h2>
+    <div class="m-setup-tabs">
+      <button type="button" data-os="ios">iPhone</button>
+      <button type="button" data-os="android">Android</button>
+    </div>
+    <ol class="m-setup-steps" data-for="ios">
+      <li>Open this page in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (square with an arrow) at the bottom.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+      <li>Tap <b>Add</b>. Fitch now opens full screen from your home screen.</li>
+    </ol>
+    <ol class="m-setup-steps" data-for="android">
+      <li>Open this page in <b>Chrome</b>.</li>
+      <li>Tap the <b>&#8942; menu</b> at the top right.</li>
+      <li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li>
+      <li>Tap <b>Install</b>. Fitch now opens full screen from your home screen.</li>
+    </ol>
+    <button type="button" class="m-login-btn" id="mSetupInstall" hidden>Install now</button>
+    <button type="button" class="m-setup-close" id="mSetupClose">Maybe later</button>
+  </div>
+
+  <header class="m-header glass" id="mHeader">
+    <div class="m-header-top">
+      <img class="m-header-logo" src="image/fitchLogo.png" alt="">
+      <div class="m-header-title">
+        <h1 id="mSchoolName">Fitch</h1>
+        <span class="m-badge" id="mStudentBadge"></span>
+      </div>
+      <button class="m-icon-btn" id="mExitBtn" type="button" aria-label="Exit to join screen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </div>
+    <div class="m-lang" role="radiogroup" aria-label="Translate content">
+      <button type="button" class="m-pill is-active" data-lang="en" role="radio" aria-checked="true">English</button>
+      <button type="button" class="m-pill" data-lang="es" role="radio" aria-checked="false">Espa&ntilde;ol</button>
+      <button type="button" class="m-pill" data-lang="pt" role="radio" aria-checked="false">Portugu&ecirc;s</button>
+      <button type="button" class="m-pill" data-lang="zh-CN" role="radio" aria-checked="false">&#20013;&#25991;</button>
+    </div>
+    <p class="m-translate-status" id="mTranslateStatus" role="status" aria-live="polite" hidden></p>
+  </header>
+
+  <main class="m-main" id="mMain">
+    <section class="m-panel is-active" data-panel="feed" id="panelFeed" aria-label="Updates">
+      <div id="feedList" class="m-list"></div>
+    </section>
+
+    <section class="m-panel" data-panel="qa" id="panelQa" aria-label="Questions and answers" hidden>
+      <div id="qaList" class="m-list"></div>
+    </section>
+
+    <section class="m-panel" data-panel="calendar" id="panelCalendar" aria-label="Calendar" hidden>
+      <div class="m-calendar glass">
+        <iframe id="mCalendarFrame" title="School calendar" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <p class="m-empty" id="mCalendarEmpty" hidden>No calendar has been set up for this school.</p>
+      </div>
+      <a class="m-cal-link" id="mCalendarLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Open in Google Calendar</a>
+    </section>
+
+    <section class="m-panel" data-panel="photos" id="panelPhotos" aria-label="Photos" hidden>
+      <div id="photoGrid" class="m-photos"></div>
+    </section>
+
+    <section class="m-panel" data-panel="polls" id="panelPolls" aria-label="Polls" hidden><div id="pollsRoot"></div></section>
+    <section class="m-panel" data-panel="documents" id="panelDocuments" aria-label="Documents" hidden><div id="documentsRoot"></div></section>
+  </main>
+
+  <button class="m-fab" id="mFab" type="button" aria-label="Ask a question" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <nav class="m-tabbar glass" id="mTabbar" aria-label="Main navigation">
+    <button class="m-tab is-active" type="button" data-tab="feed" aria-selected="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span>Updates</span>
+    </button>
+    <button class="m-tab" type="button" data-tab="qa" aria-selected="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z"/></svg>
+      <span>Q&amp;A</span>
+    </button>
+    <button class="m-tab" type="button" data-tab="calendar" aria-selected="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+      <span>Calendar</span>
+    </button>
+    <button class="m-tab" type="button" data-tab="photos" aria-selected="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="m21 16-5-5-8 8"/></svg>
+      <span>Photos</span>
+    </button>
+    <button class="m-tab" type="button" data-tab="polls" aria-selected="false" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+      <span>Polls</span>
+    </button>
+    <button class="m-tab" type="button" data-tab="documents" aria-selected="false" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+      <span>Docs</span>
+    </button>
+  </nav>
+
+  <div class="m-sheet-backdrop" id="mSheetBackdrop" hidden></div>
+  <form class="m-sheet glass" id="mSheet" aria-labelledby="mSheetTitle" hidden>
+    <div class="m-sheet-grabber" aria-hidden="true"></div>
+    <div class="m-sheet-head">
+      <button type="button" class="m-link-btn" id="mSheetCancel">Cancel</button>
+      <h2 id="mSheetTitle">Ask a question</h2>
+      <button type="submit" class="m-link-btn m-link-strong" id="mSheetSubmit" disabled>Post</button>
+    </div>
+    <p class="m-sheet-context" id="mSheetContext" hidden></p>
+    <label class="m-field">
+      <span id="mSheetBodyLabel">Question</span>
+      <textarea id="mSheetBody" rows="5" maxlength="1000" required></textarea>
+    </label>
+    <p class="m-sheet-status" id="mSheetStatus" role="status" aria-live="polite"></p>
+  </form>
+
+  <div class="m-toast" id="mToast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="js/mobile.js"></script>
+  <script type="module" src="js/mobile-setup.js"></script>
+  <script type="module" src="js/mobile-finch.js"></script>
+  <script type="module" src="js/school-extras.js"></script>
+</body>
+</html>

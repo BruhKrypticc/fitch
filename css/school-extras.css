@@ -1,0 +1,168 @@
+/* Document Locker and class office polls. Works with both styles.css and mobile.css tokens. */
+.xl-module {
+  --xl-ink: var(--ink, var(--text, #1c2c27));
+  --xl-muted: var(--muted, var(--text-2, #667069));
+  --xl-line: var(--line, rgb(128 128 128 / 28%));
+  --xl-surface: var(--surface, var(--card, #fff));
+  --xl-primary: var(--primary, #2f6f5a);
+  --xl-contrast: var(--primary-contrast, #fff);
+  display: grid;
+  gap: 14px;
+  color: var(--xl-ink);
+  --xl-font: var(--body-font, var(--m-font, "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif));
+  font-family: var(--xl-font);
+}
+
+/* Force the app font on everything inside; headings and form controls otherwise fall back to
+   the serif heading font or the browser default. */
+.xl-module, .xl-module * { box-sizing: border-box; }
+.xl-module h1, .xl-module h2, .xl-module h3, .xl-module h4, .xl-module p, .xl-module strong, .xl-module span,
+.xl-module input, .xl-module select, .xl-module button, .xl-module a, .xl-module article { font-family: var(--xl-font); }
+
+.xl-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3; letter-spacing: normal; color: var(--xl-ink); }
+.xl-sub, .xl-hint, .xl-mode, .xl-status { margin: 4px 0 0; color: var(--xl-muted); font-size: 13px; line-height: 1.45; }
+.xl-mode {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid var(--xl-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--xl-primary) 8%, transparent);
+}
+
+.xl-form {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--xl-line);
+  border-radius: 12px;
+  background: var(--xl-surface);
+}
+
+.xl-module .xl-form input,
+.xl-module .xl-form select,
+.xl-module .xl-search {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--xl-line);
+  border-radius: 8px;
+  background: var(--xl-surface);
+  color: var(--xl-ink);
+  font: 500 14px/1.3 var(--xl-font);
+}
+
+.xl-module .xl-form input[type="file"] { padding: 9px 12px; height: auto; }
+.xl-options-edit { display: grid; gap: 8px; }
+
+.xl-module .xl-btn,
+.xl-module a.xl-btn,
+.xl-module .xl-chip,
+.xl-module .xl-option {
+  display: inline-flex;
+  width: auto;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--xl-line);
+  border-radius: 8px !important;
+  background: var(--xl-surface);
+  box-shadow: none !important;
+  color: var(--xl-ink);
+  font: 600 13px/1.2 var(--xl-font);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.xl-module .xl-btn:hover:not(:disabled),
+.xl-module .xl-chip:hover { border-color: var(--xl-primary); }
+.xl-module .xl-btn:disabled, .xl-module .xl-option:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.xl-module .xl-btn-primary {
+  border-color: var(--xl-primary);
+  background: var(--xl-primary);
+  color: var(--xl-contrast);
+}
+
+.xl-module .xl-btn-danger { color: #b3261e; border-color: color-mix(in srgb, #b3261e 40%, var(--xl-line)); }
+
+.xl-tools { display: grid; gap: 10px; }
+.xl-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.xl-module .xl-chip { min-height: 32px; border-radius: 999px !important; padding: 0 12px; }
+.xl-module .xl-chip.is-active { background: var(--xl-primary); border-color: var(--xl-primary); color: var(--xl-contrast); }
+
+.xl-list { display: grid; gap: 10px; }
+.xl-empty { margin: 0; padding: 18px; text-align: center; color: var(--xl-muted); font-size: 14px; }
+
+.xl-row, .xl-poll {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--xl-line);
+  border-radius: 12px;
+  background: var(--xl-surface);
+}
+
+.xl-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.xl-info { display: grid; gap: 3px; min-width: 0; }
+.xl-name { overflow-wrap: anywhere; font-size: 15px; }
+.xl-meta { color: var(--xl-muted); font-size: 12px; }
+.xl-actions, .xl-poll-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.xl-poll-foot { justify-content: space-between; }
+.xl-poll-foot .xl-meta:first-child { margin-right: auto; }
+
+.xl-poll-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.xl-poll-q { font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+.xl-badge {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #2fb36d 18%, transparent);
+  color: #1d7a4a;
+  font-size: 11px;
+  font-weight: 700;
+}
+.xl-badge.is-closed { background: rgb(128 128 128 / 18%); color: var(--xl-muted); }
+
+.xl-module .xl-option { width: 100%; justify-content: flex-start; min-height: 44px; text-align: left; }
+
+.xl-result {
+  position: relative;
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  overflow: hidden;
+  padding: 0 12px;
+  border: 1px solid var(--xl-line);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.xl-result.is-mine { border-color: var(--xl-primary); }
+.xl-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--xl-primary) 18%, transparent);
+  transition: width 0.4s ease;
+}
+.xl-result-text, .xl-result-num { position: relative; }
+.xl-result-text { display: inline-flex; align-items: center; gap: 8px; overflow-wrap: anywhere; font-weight: 600; }
+.xl-check { display: inline-flex; flex: none; width: 18px; height: 18px; color: var(--xl-primary); }
+.xl-check svg { width: 100%; height: 100%; }
+.xl-result-num { flex: none; color: var(--xl-muted); font-size: 12px; font-weight: 700; }
+
+@media (max-width: 560px) {
+  .xl-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xl-bar { transition: none; }
+}
+
+/* Feature toggle list in Finch Settings */
+.finch-flag-group { display: grid; gap: 8px; margin: 14px 0; }
+.finch-flag-group > h4 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }

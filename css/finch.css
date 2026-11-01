@@ -1,0 +1,832 @@
+/* Finch widget. Selectors are scoped under .finch-widget (with !important only where the
+   app's global `body button:not(...)` rules would otherwise win). */
+.finch-widget {
+  --finch-radius: 20px;
+  position: fixed;
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  font-family: var(--body-font);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.finch-widget[hidden],
+.finch-widget .finch-drawer[hidden] {
+  display: none;
+}
+
+.finch-widget button {
+  display: inline-flex;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.finch-widget button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 40%, white) !important;
+  outline-offset: 2px !important;
+}
+
+/* Brand mark */
+.finch-avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--finch-avatar-color, var(--primary));
+  --finch-eye: var(--finch-avatar-bg, #fff);
+}
+
+.finch-avatar svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating button */
+.finch-widget button.finch-launcher {
+  --finch-avatar-color: var(--primary-contrast);
+  --finch-avatar-bg: var(--primary);
+  width: 58px;
+  height: 58px;
+  border-radius: 50% !important;
+  background: var(--primary);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary-dark) 30%, transparent), 0 2px 6px rgb(0 0 0 / 18%) !important;
+  transition: transform 200ms cubic-bezier(0.22, 0.68, 0.24, 1), box-shadow 200ms ease;
+}
+
+.finch-widget button.finch-launcher:hover {
+  transform: translateY(-2px) scale(1.04) !important;
+}
+
+.finch-widget button.finch-launcher:active {
+  transform: scale(0.95) !important;
+}
+
+.finch-widget .finch-launcher .finch-avatar {
+  width: 30px;
+  height: 30px;
+}
+
+/* Drawer */
+.finch-drawer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: min(392px, calc(100vw - 32px));
+  height: min(560px, calc(100dvh - 120px));
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: var(--finch-radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgb(20 30 25 / 26%), 0 4px 12px rgb(20 30 25 / 10%);
+  transform-origin: bottom right;
+  animation: finch-pop 220ms cubic-bezier(0.22, 0.68, 0.24, 1);
+  /* Out of flow, so opening it never shifts the launcher. */
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+}
+
+@keyframes finch-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.finch-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.finch-header .finch-avatar {
+  --finch-avatar-color: var(--primary);
+  --finch-avatar-bg: #fff;
+  box-sizing: border-box;
+  width: 42px;
+  height: 42px;
+  padding: 6px;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.finch-titles {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.finch-titles strong {
+  font: 700 18px/1.15 var(--heading-font);
+  letter-spacing: 0.01em;
+}
+
+.finch-titles span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.88;
+}
+
+.finch-titles span::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7be0a4;
+  content: "";
+}
+
+.finch-widget button.finch-close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50% !important;
+  background: rgb(255 255 255 / 16%);
+  color: inherit;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.finch-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.finch-widget button.finch-close:hover {
+  background: rgb(255 255 255 / 28%);
+}
+
+.finch-widget button.finch-close:active {
+  background: rgb(255 255 255 / 36%);
+  transform: scale(0.92) !important;
+}
+
+.finch-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 16px 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: color-mix(in srgb, var(--paper) 70%, white);
+  scroll-behavior: smooth;
+}
+
+.finch-message {
+  max-width: 86%;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  animation: finch-in 200ms ease;
+}
+
+@keyframes finch-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.finch-message-bot {
+  align-self: flex-start;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 16px 16px 16px 4px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+}
+
+.finch-rich { white-space: normal; }
+.finch-rich p { margin: 0 0 8px; }
+.finch-rich ul, .finch-rich ol { margin: 0 0 8px; padding-left: 20px; }
+.finch-rich li { margin: 2px 0; }
+.finch-rich .finch-heading { font-weight: 700; }
+.finch-rich code { padding: 1px 4px; border-radius: 4px; background: color-mix(in srgb, var(--line) 50%, transparent); font-size: 0.92em; }
+.finch-rich > :last-child { margin-bottom: 0; }
+
+.finch-message-user {
+  align-self: flex-end;
+  border-radius: 16px 16px 4px 16px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.finch-typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 14px 16px;
+}
+
+.finch-typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: finch-dot 1s infinite ease-in-out;
+}
+
+.finch-typing i:nth-child(2) { animation-delay: 0.15s; }
+.finch-typing i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes finch-dot {
+  0%, 60%, 100% { opacity: 0.3; transform: none; }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+.finch-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.finch-widget button.finch-chip {
+  padding: 7px 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--line));
+  border-radius: 999px !important;
+  background: var(--surface);
+  color: var(--primary);
+  font: 600 13px var(--body-font);
+  transition: background 160ms ease;
+}
+
+.finch-widget button.finch-chip:hover {
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  transform: none !important;
+}
+
+/* Composer */
+.finch-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: var(--surface);
+}
+
+.finch-widget .finch-form input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  height: 46px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 55%, white);
+  color: var(--ink);
+  font: 500 16px var(--body-font);
+}
+
+.finch-widget .finch-form input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.finch-widget .finch-form input:focus {
+  border-color: var(--primary);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  outline-offset: 1px;
+  background: #fff;
+}
+
+.finch-widget button.finch-send {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50% !important;
+  background: var(--primary);
+  color: var(--primary-contrast);
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.finch-widget button.finch-send:hover {
+  background: var(--primary-dark);
+  transform: none !important;
+}
+
+.finch-widget button.finch-send:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.finch-send svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The dimmed backdrop only exists on phones, where the drawer is a bottom sheet. */
+.finch-backdrop {
+  display: none;
+}
+
+/* Phones: the button never moves. The sheet and the backdrop are separate fixed layers that
+   animate on their own, and the button just fades in place while the sheet is up. */
+@media (max-width: 600px) {
+  .finch-widget {
+    --sheet-h: min(calc(var(--finch-vh, 100dvh) * 0.86), 640px);
+    right: calc(14px + env(safe-area-inset-right, 0px));
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .finch-backdrop {
+    position: fixed;
+    inset: 0;
+    display: block;
+    background: rgb(15 25 20 / 45%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 260ms ease;
+  }
+
+  .finch-widget.is-open:not(.is-closing) .finch-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .finch-widget.is-open:not(.is-closing) button.finch-launcher {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.7) !important;
+  }
+
+  .finch-widget button.finch-launcher {
+    transition: opacity 200ms ease 60ms, transform 240ms cubic-bezier(0.22, 0.68, 0.24, 1) 60ms, box-shadow 200ms ease;
+  }
+
+  .finch-widget .finch-drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    top: calc(var(--finch-top, 0px) + var(--finch-vh, 100dvh) - var(--sheet-h));
+    width: 100%;
+    height: var(--sheet-h);
+    border-radius: var(--finch-radius) var(--finch-radius) 0 0;
+    border-width: 1px 0 0;
+    transform-origin: bottom center;
+    animation: finch-sheet 340ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+
+  .finch-widget.is-closing .finch-drawer {
+    animation: finch-sheet-out 220ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+}
+
+html.finch-locked,
+html.finch-locked body {
+  overflow: hidden;
+}
+
+@keyframes finch-sheet {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@keyframes finch-sheet-out {
+  from { transform: none; }
+  to { transform: translateY(100%); }
+}
+
+@keyframes finch-pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(10px) scale(0.96); }
+}
+
+.finch-widget.is-closing .finch-drawer {
+  animation: finch-pop-out 180ms ease-in both;
+}
+
+/* The greeting settles in after the drawer has finished opening, instead of popping in with it. */
+.finch-log.is-greeting .finch-message {
+  animation: finch-in 360ms cubic-bezier(0.22, 0.68, 0.24, 1) 220ms both;
+}
+
+.finch-log.is-greeting .finch-suggestions {
+  animation: finch-in 360ms cubic-bezier(0.22, 0.68, 0.24, 1) 400ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finch-drawer, .finch-message, .finch-suggestions, .finch-typing i { animation: none !important; }
+  .finch-backdrop, .finch-widget button.finch-launcher { transition: none !important; }
+}
+
+/* Mobile app (mobile.html): it defines its own tokens, so map the ones Finch uses and dock
+   the button bottom-right like everywhere else, stacked above the tab bar and the + button. */
+.finch-mobile-app .finch-widget {
+  --surface: #fff;
+  --paper: #f3f5f4;
+  --line: rgba(20, 32, 27, 0.14);
+  --control-line: rgba(20, 32, 27, 0.22);
+  --ink: var(--text, #14201b);
+  --muted: var(--text-2, #66736d);
+  --body-font: var(--m-font, system-ui, sans-serif);
+  --heading-font: var(--m-font, system-ui, sans-serif);
+}
+
+/* Position is the same open or closed so the button never jumps when the sheet opens. */
+.finch-mobile-app .finch-widget {
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tabbar-h, 64px) + 10px + 16px);
+  z-index: 19;
+}
+
+.finch-mobile-app .finch-widget .finch-launcher {
+  width: 52px;
+  height: 52px;
+}
+
+/* On the Q&A tab the + button sits at the bottom right, so Finch stacks directly above it. */
+.finch-mobile-app:has(.m-fab:not([hidden])) .finch-widget {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tabbar-h, 64px) + 28px + 58px + 12px);
+}
+
+/* Above the tab bar while the sheet is up. */
+.finch-mobile-app .finch-widget.is-open {
+  z-index: 100;
+}
+
+.finch-mobile-app.m-logged-out .finch-widget,
+.finch-mobile-app.m-loading .finch-widget {
+  display: none !important;
+}
+
+/* Admin: Finch tab */
+/* Homepage "Finch Update": one card docked at the bottom. "Meet Finch" stays on top; the card
+   grows upward on hover/focus/tap to reveal the details beneath it. */
+.finch-tab {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  width: min(250px, calc(100vw - 24px));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: var(--surface);
+  box-shadow: 0 -8px 28px rgb(28 44 39 / 14%);
+  transform: translateX(-50%);
+  transition: width 0.4s cubic-bezier(0.22, 0.68, 0.24, 1), box-shadow 0.3s ease;
+  font-family: var(--body-font);
+  color: var(--ink);
+}
+
+.finch-tab.is-open,
+.finch-tab:has(.finch-tab-handle:focus-visible) {
+  width: min(900px, calc(100vw - 24px));
+}
+
+@media (hover: hover) {
+  .finch-tab:hover {
+    width: min(900px, calc(100vw - 24px));
+  }
+}
+
+.finch-tab button.finch-tab-handle {
+  --finch-avatar-color: var(--primary-contrast);
+  --finch-avatar-bg: var(--primary);
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 10px 16px 10px 10px;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 0 !important;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none !important;
+  cursor: pointer;
+  font: 700 15px/1 var(--body-font);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.finch-tab button.finch-tab-handle:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 40%, white) !important;
+  outline-offset: -3px !important;
+}
+
+.finch-tab-mark {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.finch-tab-mark .finch-avatar {
+  width: 22px;
+  height: 22px;
+}
+
+.finch-tab-label {
+  flex: 1;
+}
+
+.finch-tab-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.finch-tab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2fb36d;
+  box-shadow: 0 0 0 3px rgb(47 179 109 / 20%);
+}
+
+.finch-tab-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  transition: transform 0.3s ease;
+}
+
+.finch-tab-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+
+.finch-tab.is-open .finch-tab-panel,
+.finch-tab:has(.finch-tab-handle:focus-visible) .finch-tab-panel {
+  grid-template-rows: 1fr;
+}
+
+.finch-tab.is-open .finch-tab-chevron,
+.finch-tab:has(.finch-tab-handle:focus-visible) .finch-tab-chevron {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .finch-tab:hover .finch-tab-panel {
+    grid-template-rows: 1fr;
+  }
+
+  .finch-tab:hover .finch-tab-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+/* The inner block is always laid out at its final width and simply clipped by the card, so the
+   text never re-wraps while the card widens. */
+.finch-tab-inner {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+  width: calc(min(900px, 100vw - 24px) - 2px);
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 24px;
+  border-top: 1px solid transparent;
+  transition: padding 0.4s cubic-bezier(0.22, 0.68, 0.24, 1), border-color 0.3s ease;
+}
+
+/* Hidden text starts fully blurred and only sharpens once the card has finished growing (0.4s).
+   On close it hides immediately, then the card shrinks. */
+.finch-tab-copy,
+.finch-tab-points {
+  opacity: 0;
+  filter: blur(14px);
+  transition: opacity 0.12s ease, filter 0.12s ease;
+}
+
+.finch-tab.is-open .finch-tab-copy,
+.finch-tab.is-open .finch-tab-points,
+.finch-tab:has(.finch-tab-handle:focus-visible) .finch-tab-copy,
+.finch-tab:has(.finch-tab-handle:focus-visible) .finch-tab-points {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 0.35s ease 0.4s, filter 0.45s ease 0.4s;
+}
+
+@media (hover: hover) {
+  .finch-tab:hover .finch-tab-copy,
+  .finch-tab:hover .finch-tab-points {
+    opacity: 1;
+    filter: blur(0);
+    transition: opacity 0.35s ease 0.4s, filter 0.45s ease 0.4s;
+  }
+}
+
+.finch-tab.is-open .finch-tab-inner,
+.finch-tab:has(.finch-tab-handle:focus-visible) .finch-tab-inner {
+  padding: 18px 24px 24px;
+  border-top-color: var(--line);
+}
+
+@media (hover: hover) {
+  .finch-tab:hover .finch-tab-inner {
+    padding: 18px 24px 24px;
+    border-top-color: var(--line);
+  }
+}
+
+.finch-tab-copy h2 {
+  margin: 6px 0;
+  font-family: var(--heading-font);
+  font-size: 24px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.finch-tab-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.finch-tab-copy .finch-tab-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.finch-tab-points {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.finch-tab-points li::before {
+  content: "\2713";
+  margin-right: 8px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .finch-tab {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .finch-tab-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    max-height: 62dvh;
+    overflow-y: auto;
+  }
+
+  .finch-tab-copy h2 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finch-tab, .finch-tab-panel, .finch-tab-inner, .finch-tab-chevron { transition: none; }
+
+  .finch-tab-copy,
+  .finch-tab-points,
+  .finch-tab.is-open .finch-tab-copy,
+  .finch-tab.is-open .finch-tab-points,
+  .finch-tab:hover .finch-tab-copy,
+  .finch-tab:hover .finch-tab-points { transition: none; }
+}
+
+.settings-group-heading {
+  margin: 28px 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.settings-section-number.finch-brand-badge {
+  --finch-avatar-color: var(--primary-contrast);
+  --finch-avatar-bg: var(--primary);
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: var(--primary);
+}
+
+.finch-brand-badge .finch-avatar {
+  width: 22px;
+  height: 22px;
+}
+
+.finch-textarea {
+  min-height: 110px;
+  line-height: 1.5;
+}
+
+.finch-kb-divider {
+  margin: 18px 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.finch-file-input {
+  height: auto;
+  padding: 10px 12px;
+}
+
+.finch-kb-list-heading {
+  margin-top: 24px;
+}
+
+.finch-kb-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.finch-kb-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.finch-kb-copy {
+  min-width: 0;
+}
+
+.finch-kb-copy strong,
+.finch-kb-copy span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.finch-kb-copy span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.finch-kb-item .finch-kb-delete {
+  flex: none;
+  width: auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent);
+}
+
+.finch-kb-item .finch-kb-delete:hover {
+  background: var(--accent);
+  box-shadow: none;
+  color: #fff;
+  transform: none;
+}

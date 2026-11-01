@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#173f34">
+  <title>School Board — Fitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js">
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/finch.css">
+  <link rel="stylesheet" href="css/school-extras.css">
+  <link rel="icon" type="image/png" href="image/fitchLogo.png">
+  <link rel="apple-touch-icon" href="image/fitchLogo.png">
+</head>
+<body class="dashboard-page admin-dashboard-page school-loading">
+  <div id="schoolLoadingScreen" class="school-loading-screen" role="status" aria-live="polite">
+    <img class="loading-mark" src="image/fitchLogo.png" alt="">
+    <span>Opening your school board...</span>
+    <small class="loading-hint">This might take a moment. Please wait...</small>
+  </div>
+  <main class="dashboard">
+    <div class="brand-bar dashboard-brand-bar">
+      <a class="brand-lockup" href="/" aria-label="Fitch home">
+        <img class="brand-logo" src="image/fitchLogo.png" alt="">
+      </a>
+      <span class="brand-note">THE SCHOOL COMMUNITY BOARD</span>
+    </div>
+    <header class="dashboard-header">
+      <div>
+        <p class="eyebrow">YOUR SCHOOL BOARD</p>
+        <h1 id="schoolNameHeading">Your school</h1>
+        <p id="schoolTagline" class="subtitle">A place for your school to keep in touch.</p>
+      </div>
+      <button id="logoutBtn" class="secondary-button" type="button" aria-label="Back to Fitch" title="Back to Fitch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M19 12H5"></path>
+          <path d="m12 19-7-7 7-7"></path>
+        </svg>
+      </button>
+    </header>
+    <p id="featuresDisabledMessage" class="empty-state" hidden>The organizer has turned off announcements and Q&amp;A.</p>
+
+    <nav class="school-tabs" aria-label="School sections">
+      <button class="school-tab is-active" type="button" data-tab="board" aria-controls="boardTab" aria-selected="true">Board</button>
+      <button class="school-tab" type="button" data-tab="questions" aria-controls="questionsTab" aria-selected="false">Q&amp;A</button>
+      <button id="settingsTabButton" class="school-tab" type="button" data-tab="settings" aria-controls="settingsTab" aria-selected="false" hidden>Settings</button>
+      <button id="finchTabButton" class="school-tab" type="button" data-tab="finch" aria-controls="finchTab" aria-selected="false" hidden>Finch</button>
+      <button id="pollsTabButton" class="school-tab" type="button" data-tab="polls" aria-controls="pollsTab" aria-selected="false" hidden>Polls</button>
+      <button id="documentsTabButton" class="school-tab" type="button" data-tab="documents" aria-controls="documentsTab" aria-selected="false" hidden>Documents</button>
+    </nav>
+
+    <section id="boardTab" class="tab-panel is-active" data-tab-panel="board">
+    <section class="join-code-panel" aria-labelledby="joinCodeLabel">
+      <div>
+        <p class="eyebrow" id="joinCodeLabel">YOUR SCHOOL'S JOIN CODE</p>
+        <p id="joinCode" class="join-code">Loading...</p>
+      </div>
+      <p class="field-hint">Share this 5-character code with your students.</p>
+      <div class="onboarding-actions">
+        <button id="onboardingGuideBtn" class="secondary-button" type="button">Open onboarding guide</button>
+        <button id="onboardingDownloadBtn" class="secondary-button" type="button">Download PDF</button>
+      </div>
+      <p id="onboardingStatus" class="field-hint" role="status" aria-live="polite"></p>
+    </section>
+    <p id="announcementsDisabledNotice" class="announcement-disabled-notice" role="status" hidden>
+      Announcements are hidden from students. Turn on Announcements in Settings to show them on the student board.
+    </p>
+
+    <div class="admin-tools-grid">
+      <section id="announcementComposerPanel" class="dashboard-panel" aria-labelledby="announcementTitle">
+        <h2 id="announcementTitle">Put something on the board</h2>
+        <form id="announcementForm">
+          <div class="form-group">
+            <label for="announcementTitleInput">Announcement title</label>
+            <input id="announcementTitleInput" type="text" maxlength="120" required placeholder="What’s the headline?">
+          </div>
+          <div class="form-group">
+            <label for="announcementContent">Message</label>
+            <textarea id="announcementContent" rows="4" maxlength="2000" required placeholder="What should everyone know?"></textarea>
+          </div>
+          <button id="postAnnouncementBtn" type="submit" aria-label="Post an update" title="Post an update">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </button>
+        </form>
+        <p id="adminStatus" class="feedback" aria-live="polite"></p>
+      </section>
+    <section class="dashboard-panel" aria-labelledby="announcementListTitle">
+      <h2 id="announcementListTitle">Recent announcements</h2>
+      <div id="announcementList" class="announcement-list" aria-live="polite">
+        <p class="empty-state">Loading announcements...</p>
+      </div>
+    </section>
+    </div>
+    <section id="photoComposerSection" class="dashboard-panel photo-composer-section" aria-labelledby="photoComposerTitle" hidden>
+      <h2 id="photoComposerTitle">Share a photo</h2>
+      <form id="photo-post-form" class="photo-post-form">
+        <label for="photo-file-input">Choose an image</label>
+        <input type="file" id="photo-file-input" accept="image/*" required>
+        <label for="photo-caption">Caption <span>(optional)</span></label>
+        <textarea id="photo-caption" maxlength="2000" placeholder="Add a caption or note (Optional)..."></textarea>
+        <button id="photo-post-button" type="submit" aria-label="Post photo" title="Post photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 12h14"></path>
+            <path d="m13 6 6 6-6 6"></path>
+          </svg>
+        </button>
+        <p id="photo-post-status" class="feedback" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <section id="photoFeedSection" class="dashboard-panel photo-feed-section" aria-labelledby="photoFeedTitle">
+      <h2 id="photoFeedTitle">Recent photos</h2>
+      <div id="photo-feed-container" class="photo-feed-container" aria-live="polite">
+        <p class="empty-state">Loading photos...</p>
+      </div>
+    </section>
+    </section>
+
+    <section id="questionsTab" class="tab-panel" data-tab-panel="questions" hidden>
+      <section class="dashboard-panel question-compose-panel" aria-labelledby="questionFormTitle">
+        <h2 id="questionFormTitle">Ask the school</h2>
+        <p class="question-form-hint">Post a question on the school board. Class officers and organizers can reply.</p>
+        <form id="questionForm">
+          <input id="questionAuthorInput" type="hidden">
+          <div class="form-group">
+            <label for="questionContentInput">Your question</label>
+            <textarea id="questionContentInput" rows="3" maxlength="1200" required placeholder="What would you like to know?"></textarea>
+          </div>
+          <button id="askQuestionBtn" type="submit" aria-label="Post question" title="Post question">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </button>
+        </form>
+        <p id="questionStatus" class="feedback" aria-live="polite"></p>
+      </section>
+      <section class="dashboard-panel" aria-labelledby="questionListTitle">
+        <h2 id="questionListTitle">Questions &amp; answers</h2>
+        <div id="questionsList" class="qa-list" aria-live="polite">
+          <p class="empty-state">Loading questions...</p>
+        </div>
+      </section>
+    </section>
+
+    <section id="pollsTab" class="tab-panel" data-tab-panel="polls" hidden><div id="pollsRoot"></div></section>
+    <section id="documentsTab" class="tab-panel" data-tab-panel="documents" hidden><div id="documentsRoot"></div></section>
+
+    <section id="finchTab" class="tab-panel" data-tab-panel="finch" hidden>
+      <section class="settings-card" aria-labelledby="finchKbTitle">
+        <div class="settings-section-heading">
+          <span class="settings-section-number finch-brand-badge" aria-hidden="true"></span>
+          <div>
+            <h3 id="finchKbTitle">Finch knowledge base</h3>
+            <p>Handbooks, bell schedules, maps, policies, class lists and teacher directories. Finch answers only from this content. Students can read it, so don’t add private or sensitive information.</p>
+          </div>
+        </div>
+        <form id="finchKbForm">
+          <div class="form-group">
+            <label for="finchKbCategoryInput">Category</label>
+            <select id="finchKbCategoryInput">
+              <option>Policy</option>
+              <option>Handbook</option>
+              <option>Schedule</option>
+              <option>Map</option>
+              <option>Classes</option>
+              <option>Programs of study</option>
+              <option>Teacher directory</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="finchKbFileInput">Upload a PDF</label>
+            <input id="finchKbFileInput" class="finch-file-input" type="file" accept="application/pdf,.pdf">
+            <span class="field-hint">Text is extracted in your browser and split into searchable pieces. PDF only, up to 15 MB. Scanned PDFs with no selectable text can’t be read.</span>
+          </div>
+          <p class="finch-kb-divider">or paste text</p>
+          <div class="form-group">
+            <label for="finchKbTitleInput">Title</label>
+            <input id="finchKbTitleInput" type="text" maxlength="90" placeholder="Bell schedule (defaults to the PDF name)">
+          </div>
+          <div class="form-group">
+            <label for="finchKbContentInput">Content</label>
+            <textarea id="finchKbContentInput" class="finch-textarea" maxlength="20000" placeholder="Paste the text Finch should know. Separate topics with blank lines."></textarea>
+          </div>
+          <div class="settings-form-actions">
+            <p id="finchKbStatus" class="feedback" aria-live="polite"></p>
+            <button id="finchKbSaveBtn" class="settings-save-button" type="submit">Add to knowledge base</button>
+          </div>
+        </form>
+        <h3 class="finch-kb-list-heading">Uploaded knowledge</h3>
+        <div id="finchKbList" class="finch-kb-list" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <section id="settingsTab" class="tab-panel" data-tab-panel="settings" hidden>
+      <section id="schoolSettingsPanel" class="settings-page" aria-labelledby="settingsTitle" hidden>
+        <header class="settings-page-heading">
+          <div>
+            <h2 id="settingsTitle">Settings</h2>
+            <p class="settings-page-copy">Update how your school looks and what students can do.</p>
+          </div>
+          <span class="settings-owner-note">Organizer only</span>
+        </header>
+        <form id="schoolSettingsForm" class="settings-form">
+          <section class="settings-card settings-school-card" aria-labelledby="schoolDetailsTitle">
+            <div class="settings-section-heading">
+              <span class="settings-section-number" aria-hidden="true">01</span>
+              <div>
+                <h3 id="schoolDetailsTitle">School details</h3>
+                <p>Give your school its own name and look.</p>
+              </div>
+            </div>
+            <div class="settings-field-grid">
+              <div class="form-group settings-field-wide">
+                <label for="schoolNameSettingInput">School name</label>
+                <input id="schoolNameSettingInput" type="text" maxlength="100" required>
+              </div>
+              <div class="form-group">
+                <label for="primaryColorInput">School color</label>
+                <div class="color-setting">
+                  <input id="primaryColorInput" type="color" value="#245847" aria-label="Choose school color">
+                  <span>Used for buttons and highlights</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fontFamilyInput">Display font</label>
+                <select id="fontFamilyInput">
+                  <option value="DM Sans">DM Sans</option>
+                  <option value="Inter">Inter</option>
+                  <option value="Manrope">Manrope</option>
+                  <option value="Comic Sans MS">Comic Sans MS</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                </select>
+              </div>
+              <div class="form-group settings-field-wide">
+                <label for="schoolLogoInput">School logo <span class="optional-label">Optional</span></label>
+                <div class="school-logo-setting">
+                  <img id="schoolLogoPreview" class="school-logo-preview" alt="School logo preview" hidden>
+                  <div class="school-logo-controls">
+                    <input id="schoolLogoInput" type="file" accept="image/*">
+                    <span class="field-hint">Choose an image to show in the school board header.</span>
+                    <button id="removeSchoolLogoBtn" class="secondary-button" type="button" hidden>Remove logo</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group settings-field-wide">
+                <label for="customTaglineInput">Tagline <span class="optional-label">Optional</span></label>
+                <input id="customTaglineInput" type="text" maxlength="120" placeholder="A short motto for your school">
+              </div>
+            </div>
+          </section>
+
+          <section class="settings-card settings-features-card" aria-labelledby="schoolFeaturesTitle">
+            <div class="settings-section-heading">
+              <span class="settings-section-number" aria-hidden="true">02</span>
+              <div>
+                <h3 id="schoolFeaturesTitle">School features</h3>
+                <p>Choose what’s available to your students.</p>
+              </div>
+            </div>
+            <div class="settings-feature-list">
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Require school Google sign-in for students (Safe Mode)</strong><span class="coppa-note">COPPA-aligned: students never enter personal details and only see a generated display name.</span><span>Optional. Off by default, students pick their own display name. When on, students must sign in with a verified Google account from the domain below and get a generated display name instead; this does not affect organizer or officer sign-in.</span></span>
+                <input id="studentEmailRequiredInput" type="checkbox">
+              </label>
+              <div id="studentEmailDomainGroup" class="form-group settings-field-wide" hidden>
+                <label for="studentEmailDomainInput">Student email domain</label>
+                <input id="studentEmailDomainInput" type="text" maxlength="253" placeholder="students.school.edu" autocomplete="off">
+                <span class="field-hint">Enter one domain only, without @ (for example, students.school.edu). Domain matching is enforced before student Q&amp;A posting.</span>
+              </div>
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Announcements</strong><span>Show school updates on the board.</span></span>
+                <input id="announcementsEnabledInput" type="checkbox">
+              </label>
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Q&amp;A</strong><span>Let students browse school questions.</span></span>
+                <input id="questionsEnabledInput" type="checkbox">
+              </label>
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Student questions</strong><span>Allow students to submit questions.</span></span>
+                <input id="questionPostingEnabledInput" type="checkbox">
+              </label>
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Open answers</strong><span>Let anyone in the school answer.</span></span>
+                <input id="anyoneCanAnswerInput" type="checkbox">
+              </label>
+              <label class="setting-toggle">
+                <span class="setting-toggle-copy"><strong>Hide dates &amp; times</strong><span>Don’t show post dates or times to students (handy for demos).</span></span>
+                <input id="hideDatesInput" type="checkbox">
+              </label>
+            </div>
+          </section>
+          <div class="settings-form-actions">
+            <p id="settingsStatus" class="feedback" aria-live="polite"></p>
+            <button id="saveSettingsBtn" class="settings-save-button" type="submit">
+              <span>Save changes</span><span class="button-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section id="calendarSettingsCard" class="settings-card calendar-settings-card" aria-labelledby="calendarSettingsTitle" hidden>
+        <div class="settings-section-heading">
+          <span class="settings-section-number" aria-hidden="true">03</span>
+          <div class="calendar-settings-heading-copy">
+            <div class="calendar-heading-row">
+              <h3 id="calendarSettingsTitle">Calendar settings</h3>
+              <button id="calendarHelpButton" class="calendar-help-button" type="button" aria-label="How to find your Google Calendar embed URL">
+                <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <circle cx="8" cy="8" r="6.5"></circle>
+                  <path d="M8 7.2v4M8 4.8h.01"></path>
+                </svg>
+              </button>
+            </div>
+            <p>Share your school or student government events with students.</p>
+          </div>
+        </div>
+        <form id="calendarSettingsForm">
+          <div class="form-group">
+            <label for="calendarUrlInput">Google Calendar embed URL or Calendar ID</label>
+            <input id="calendarUrlInput" type="text" maxlength="2000" autocomplete="url" placeholder="Calendar embed URL or name@group.calendar.google.com">
+            <span class="field-hint">Paste the embed URL, the full iframe embed code, or a Calendar ID.</span>
+          </div>
+          <label class="setting-toggle calendar-enabled-toggle" for="calendarEnabledInput">
+            <span class="setting-toggle-copy">
+              <strong>Enable calendar for students</strong>
+              <span>Show the public calendar on the student board.</span>
+            </span>
+            <input id="calendarEnabledInput" type="checkbox">
+          </label>
+          <div class="calendar-settings-actions">
+            <p id="calendarSettingsStatus" class="feedback" aria-live="polite"></p>
+            <button id="saveCalendarSettingsBtn" class="settings-save-button" type="submit">Save calendar settings</button>
+          </div>
+        </form>
+      </section>
+
+      <h2 class="settings-group-heading">Administration</h2>
+
+      <section id="finchSettingsCard" class="settings-card" aria-labelledby="finchSettingsTitle" hidden>
+        <div class="settings-section-heading">
+          <span class="settings-section-number" aria-hidden="true">04</span>
+          <div>
+            <h3 id="finchSettingsTitle">Finch Settings</h3>
+            <p>Control the AI school assistant for your students.</p>
+          </div>
+        </div>
+        <form id="finchSettingsForm">
+          <label class="setting-toggle" for="finchEnabledInput">
+            <span class="setting-toggle-copy"><strong>Enable Finch</strong><span>Show the Finch chat button to students.</span></span>
+            <input id="finchEnabledInput" type="checkbox">
+          </label>
+          <div class="form-group">
+            <label for="finchInstructionsInput">Custom instructions</label>
+            <textarea id="finchInstructionsInput" class="finch-textarea" maxlength="1000" placeholder="Optional. For example: Keep answers under three sentences."></textarea>
+            <span class="field-hint">Finch will still only answer from your knowledge base.</span>
+          </div>
+          <div class="finch-flag-group">
+            <h4>What Finch can read</h4>
+            <label class="setting-toggle" for="flagFinchAnnInput">
+              <span class="setting-toggle-copy"><strong>Finch reads announcements</strong><span>Let Finch answer from official announcements.</span></span>
+              <input id="flagFinchAnnInput" data-flag="finchAnnouncements" type="checkbox" checked>
+            </label>
+            <label class="setting-toggle" for="flagFinchPhotoInput">
+              <span class="setting-toggle-copy"><strong>Finch reads photo captions</strong><span>Let Finch answer from photo captions.</span></span>
+              <input id="flagFinchPhotoInput" data-flag="finchPhotoCaptions" type="checkbox" checked>
+            </label>
+          </div>
+          <div class="settings-form-actions">
+            <p id="finchSettingsStatus" class="feedback" aria-live="polite"></p>
+            <button id="saveFinchSettingsBtn" class="settings-save-button" type="submit">Save Finch settings</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="schoolModulesCard" class="settings-card" aria-labelledby="schoolModulesTitle" hidden>
+        <div class="settings-section-heading">
+          <span class="settings-section-number" aria-hidden="true">05</span>
+          <div>
+            <h3 id="schoolModulesTitle">School modules</h3>
+            <p>Turn Polls and the Document Locker on or off for everyone at your school.</p>
+          </div>
+        </div>
+        <form id="schoolModulesForm">
+          <label class="setting-toggle" for="flagPollsInput">
+            <span class="setting-toggle-copy"><strong>Class office polls</strong><span>Show the Polls tab. Turning it off hides polls and blocks new votes.</span></span>
+            <input id="flagPollsInput" data-flag="pollsEnabled" type="checkbox" checked>
+          </label>
+          <label class="setting-toggle" for="flagDocsInput">
+            <span class="setting-toggle-copy"><strong>Document Locker</strong><span>Show the Documents tab and allow uploads.</span></span>
+            <input id="flagDocsInput" data-flag="documentLockerEnabled" type="checkbox" checked>
+          </label>
+          <div class="settings-form-actions">
+            <p id="schoolModulesStatus" class="feedback" aria-live="polite"></p>
+            <button class="settings-save-button" type="submit">Save modules</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="officerManagementPanel" class="settings-card settings-officers-card" aria-labelledby="officerManagementTitle" hidden>
+        <div class="settings-section-heading">
+          <span class="settings-section-number" aria-hidden="true">06</span>
+          <div>
+            <h3 id="officerManagementTitle">Class officers</h3>
+            <p>Invite people to help run your school space.</p>
+          </div>
+        </div>
+        <form id="officerInviteForm" class="officer-invite-form">
+          <div class="form-group">
+            <label for="officerEmailInput">Their Google account email</label>
+            <input id="officerEmailInput" type="email" autocomplete="email" required placeholder="student@example.com">
+          </div>
+          <button id="sendOfficerInviteBtn" type="submit"><span>Send invite</span><span class="button-arrow" aria-hidden="true">→</span></button>
+        </form>
+        <p id="officerInviteStatus" class="feedback" aria-live="polite"></p>
+        <div class="officer-management-columns">
+          <div><h3>Pending invitations</h3><div id="pendingOfficersList" class="saved-schools-list" aria-live="polite"></div></div>
+          <div><h3>Current officers</h3><div id="schoolOfficersList" class="saved-schools-list" aria-live="polite"></div></div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="js/landing-motion.js" defer></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

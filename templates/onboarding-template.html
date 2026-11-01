@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{schoolName}} | Fitch onboarding guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #275747;
+      --text: #1e293b;
+      --cream: #ebe5d6;
+      --line: #e6e1d4;
+      --soft: #f6f3ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px 16px 56px;
+      background: var(--cream);
+      color: var(--text);
+      font: 400 14px/1.6 "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .guide {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 48px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(39, 87, 71, 0.08);
+    }
+    h1, h2, .brand-name, .school-code {
+      color: var(--green);
+      font-family: "Bricolage Grotesque", "DM Sans", system-ui, sans-serif;
+    }
+    p, li, .footer { color: var(--text); font-family: "DM Sans", system-ui, sans-serif; }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand img { display: block; width: 48px; height: 48px; object-fit: contain; border-radius: 10px; }
+    .brand-name { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+
+    h1 { margin: 0 0 10px; font-size: clamp(24px, 5vw, 32px); font-weight: 700; line-height: 1.1; }
+    h2 { margin: 30px 0 8px; font-size: 18px; font-weight: 700; line-height: 1.25; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 12px; padding-left: 22px; }
+    li { margin: 6px 0; }
+
+    .code-box {
+      display: inline-block;
+      margin: 14px 0 6px;
+      padding: 12px 24px;
+      border: 2px solid var(--green);
+      border-radius: 14px;
+      background: var(--soft);
+      text-align: center;
+    }
+    .code-label { display: block; margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+    .school-code { display: block; font-size: 34px; font-weight: 800; letter-spacing: 0.2em; line-height: 1.1; padding-left: 0.2em; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 12px; }
+    .card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); }
+    .card h3 { margin: 0 0 4px; color: var(--green); font: 700 15px/1.3 "Bricolage Grotesque", "DM Sans", sans-serif; }
+    .card p { margin: 0; font-size: 13px; }
+
+    .footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12px; }
+    .footer p { margin: 0 0 4px; font-size: 12px; }
+    .no-print { margin-top: 20px; }
+    .no-print button {
+      padding: 10px 20px; border: 0; border-radius: 10px; background: var(--green); color: #fff;
+      font: 700 14px "DM Sans", system-ui, sans-serif; cursor: pointer;
+    }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .guide { max-width: none; border: 0; box-shadow: none; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="guide">
+    <header class="brand">
+      <img src="{{logoSrc}}" alt="Fitch logo">
+      <span class="brand-name">Fitch</span>
+    </header>
+
+    <h1>Welcome to Fitch, {{schoolName}}</h1>
+    <p>Fitch gives {{schoolName}} one place for announcements, a calendar, questions and answers, class office polls, important documents, and an AI school assistant. This guide gets you and your students started.</p>
+
+    <div class="code-box">
+      <span class="code-label">Your school code</span>
+      <span class="school-code">{{schoolCode}}</span>
+    </div>
+    <p>Share this code with students. They enter it on the Fitch home page to join {{schoolName}}.</p>
+
+    <h2>Getting started</h2>
+    <ol>
+      <li>Open Fitch and choose <strong>Join a school</strong>.</li>
+      <li>Enter the school code <strong>{{schoolCode}}</strong>.</li>
+      <li>Pick a display name (please don&rsquo;t use a real name) and start reading the board.</li>
+    </ol>
+
+    <h2>Install Fitch on your phone or computer</h2>
+    <p><strong>iPhone and iPad (Safari)</strong></p>
+    <ol>
+      <li>Open Fitch in <strong>Safari</strong>.</li>
+      <li>Tap the <strong>Share</strong> button.</li>
+      <li>Choose <strong>Add to Home Screen</strong>, then tap <strong>Add</strong>.</li>
+    </ol>
+    <p><strong>Android and desktop (Chrome)</strong></p>
+    <ol>
+      <li>Open Fitch in <strong>Chrome</strong>.</li>
+      <li>Tap the <strong>menu</strong> (three dots), then choose <strong>Install app</strong> or <strong>Add to Home screen</strong>. On a computer, click the install icon in the address bar.</li>
+      <li>Confirm by selecting <strong>Install</strong>.</li>
+    </ol>
+
+    <h2>What you can do with Fitch</h2>
+    <div class="card-grid">
+      <section class="card">
+        <h3>Document Locker</h3>
+        <p>Keep handbooks, forms, and permission slips in one searchable place that students and families can open any time.</p>
+      </section>
+      <section class="card">
+        <h3>Class office polls</h3>
+        <p>Organizers and class officers can publish polls, and results update live. Only organizers can delete a poll.</p>
+      </section>
+      <section class="card">
+        <h3>Finch AI assistant</h3>
+        <p>Finch answers questions from your school&rsquo;s own information and says so plainly when it doesn&rsquo;t know.</p>
+      </section>
+    </div>
+    <p style="margin-top: 14px;">Every poll, question, reply, and announcement passes through free automatic content moderation before it is posted, which helps keep Fitch school-appropriate at no cost to your school.</p>
+
+    <h2>Tips for organizers</h2>
+    <ul>
+      <li>Add class officers from <strong>Settings</strong> so they can help answer questions and run polls.</li>
+      <li>Fill the Finch knowledge base with bell schedules, policies, and handbooks.</li>
+      <li>Never upload private student information. Files can be opened by anyone with the link.</li>
+    </ul>
+
+    <footer class="footer">
+      <p>Prepared for {{schoolName}} &middot; School code {{schoolCode}}</p>
+      <p>Fitch &middot; Learn more in our <a href="privacy" style="color: var(--green);">Privacy Policy</a></p>
+    </footer>
+
+    <div class="no-print"><button type="button" onclick="window.print()">Print or save as PDF</button></div>
+  </main>
+</body>
+</html>

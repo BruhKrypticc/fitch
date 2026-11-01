@@ -1,0 +1,437 @@
+rules_version = '2';
+service cloud.firestore {
+  function validTheme(theme) {
+    return theme is map
+      && theme.keys().hasOnly(['primaryColor', 'fontFamily', 'customTagline', 'logoUrl'])
+      && theme.keys().hasAll(['primaryColor', 'fontFamily', 'customTagline'])
+      && theme.primaryColor is string
+      && theme.primaryColor.matches('^#[0-9a-fA-F]{6}$')
+      && theme.fontFamily in ['DM Sans', 'Manrope', 'Inter', 'Comic Sans MS', 'Arial', 'Georgia', 'Times New Roman']
+      && theme.customTagline is string
+      && theme.customTagline.size() <= 120
+      && (!('logoUrl' in theme)
+        || (theme.logoUrl is string
+          && theme.logoUrl.size() <= 2000
+          && (theme.logoUrl == '' || theme.logoUrl.matches('^https://.*'))));
+  }
+
+  function validFeatures(features) {
+    return features is map
+      && features.keys().hasOnly([
+        'announcementsEnabled',
+        'questionsEnabled',
+        'questionPostingEnabled',
+        'anyoneCanAnswerQuestions',
+        'hideDatesAndTimes',
+        'studentEmailRequired'
+      ])
+      && features.keys().hasAll([
+        'announcementsEnabled',
+        'questionsEnabled',
+        'questionPostingEnabled',
+        'anyoneCanAnswerQuestions'
+      ])
+      && features.announcementsEnabled is bool
+      && features.questionsEnabled is bool
+      && features.questionPostingEnabled is bool
+      && features.anyoneCanAnswerQuestions is bool
+      && (!('hideDatesAndTimes' in features) || features.hideDatesAndTimes is bool)
+      && (!('studentEmailRequired' in features) || features.studentEmailRequired is bool);
+  }
+
+  function validStudentEmailDomain(domain) {
+    return domain is string
+      && (domain == '' || domain.matches('^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$'));
+  }
+
+  function validCalendarSettings(settings) {
+    return settings is map
+      && (!('calendarUrl' in settings)
+        || (settings.calendarUrl is string
+          && settings.calendarUrl.size() <= 2000
+          && (settings.calendarUrl == ''
+            || settings.calendarUrl.matches('^https://calendar\\.google\\.com/calendar/embed(\\?.*)?$'))))
+      && (!('calendarEnabled' in settings) || settings.calendarEnabled is bool);
+  }
+
+  match /databases/{database}/documents {
+    function schoolFeature(schoolId, feature) {
+      let features = get(/databases/$(database)/documents/schools/$(schoolId)).data.get('features', {});
+      return !(feature in features) || features[feature] == true;
+    }
+
+    function schoolModeOn(schoolId) {
+      return get(/databases/$(database)/documents/schools/$(schoolId)).data.get('features', {}).get('studentEmailRequired', false) == true;
+    }
+
+    // Organizer toggles in settings/ai_config; a missing document or key means the feature is on.
+    function schoolToggle(schoolId, key) {
+      let path = /databases/$(database)/documents/schools/$(schoolId)/settings/ai_config;
+      return !exists(path) || get(path).data.get(key, true) == true;
+    }
+
+    function schoolOwner(schoolId) {
+      return request.auth != null
+        && get(/databases/$(database)/documents/schools/$(schoolId)).data.createdBy == request.auth.uid;
+    }
+
+    function schoolAdmin(schoolId) {
+      return schoolOwner(schoolId)
+        || (request.auth != null
+          && exists(/databases/$(database)/documents/schools/$(schoolId)/officers/$(request.auth.uid)));
+    }
+
+    function schoolStudentEmailValid(schoolId) {
+      let school = get(/databases/$(database)/documents/schools/$(schoolId)).data;
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email is string
+        && request.auth.token.email.matches('^[^@]+@[^@]+$')
+        && request.auth.token.email.lower().split('@')[1] == school.get('studentEmailDomain', '');
+    }
+
+    function schoolStudentCanPost(schoolId, displayName) {
+      let school = get(/databases/$(database)/documents/schools/$(schoolId)).data;
+      return school.get('features', {}).get('studentEmailRequired', false) != true
+        || (schoolStudentEmailValid(schoolId)
+          && exists(/databases/$(database)/documents/schools/$(schoolId)/studentAliases/$(request.auth.uid))
+          && get(/databases/$(database)/documents/schools/$(schoolId)/studentAliases/$(request.auth.uid)).data.displayName == displayName);
+    }
+
+    match /schools/{schoolId} {
+      allow get, list: if true;
+      allow create: if request.auth != null
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.joinCode is string
+        && request.resource.data.joinCode.matches('^[A-Z0-9]{5}$')
+        && request.resource.data.createdAt == request.time
+        && validTheme(request.resource.data.theme)
+        && validFeatures(request.resource.data.features)
+        && validStudentEmailDomain(request.resource.data.get('studentEmailDomain', ''))
+        && (request.resource.data.features.get('studentEmailRequired', false) != true
+          || request.resource.data.get('studentEmailDomain', '') != '')
+        && validCalendarSettings(request.resource.data);
+      allow update: if request.auth != null
+        && schoolOwner(schoolId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'theme', 'features', 'calendarUrl', 'calendarEnabled', 'studentEmailDomain'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && validTheme(request.resource.data.theme)
+        && validFeatures(request.resource.data.features)
+        && validStudentEmailDomain(request.resource.data.get('studentEmailDomain', ''))
+        && (request.resource.data.features.get('studentEmailRequired', false) != true
+          || request.resource.data.get('studentEmailDomain', '') != '')
+        && validCalendarSettings(request.resource.data);
+      allow delete: if false;
+
+      match /settings/{settingId} {
+        allow get: if true;
+        allow list: if false;
+        allow create, update: if schoolOwner(schoolId)
+          && settingId == 'ai_config'
+          && request.resource.data.keys().hasOnly([
+            'enabled', 'instructions', 'updatedAt',
+            'pollsEnabled', 'documentLockerEnabled', 'finchAnnouncements', 'finchPhotoCaptions'
+          ])
+          && request.resource.data.keys().hasAll(['updatedAt'])
+          && request.resource.data.get('enabled', false) is bool
+          && request.resource.data.get('instructions', '') is string
+          && request.resource.data.get('instructions', '').size() <= 1000
+          && request.resource.data.get('pollsEnabled', true) is bool
+          && request.resource.data.get('documentLockerEnabled', true) is bool
+          && request.resource.data.get('finchAnnouncements', true) is bool
+          && request.resource.data.get('finchPhotoCaptions', true) is bool
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if false;
+      }
+
+      match /documents/{docId} {
+        allow get, list: if true;
+        allow create: if schoolAdmin(schoolId)
+          && schoolToggle(schoolId, 'documentLockerEnabled')
+          && request.resource.data.keys().hasOnly([
+            'title', 'category', 'fileName', 'fileUrl', 'fileSize', 'mimeType',
+            'uploadedBy', 'uploadedByUid', 'createdAt'
+          ])
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 90
+          && request.resource.data.category in ['Handbook', 'Form', 'Permission slip', 'Other']
+          && request.resource.data.fileName is string
+          && request.resource.data.fileName.size() <= 160
+          && request.resource.data.fileUrl is string
+          && request.resource.data.fileUrl.size() <= 2000
+          && request.resource.data.fileUrl.matches('^https://.*')
+          && request.resource.data.fileSize is int
+          && request.resource.data.fileSize <= 20971520
+          && request.resource.data.mimeType is string
+          && request.resource.data.mimeType.size() <= 100
+          && request.resource.data.uploadedBy is string
+          && request.resource.data.uploadedBy.size() <= 60
+          && request.resource.data.uploadedByUid == request.auth.uid
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolOwner(schoolId)
+          || (schoolAdmin(schoolId) && resource.data.uploadedByUid == request.auth.uid);
+      }
+
+      match /polls/{pollId} {
+        allow get, list: if true;
+        allow create: if schoolAdmin(schoolId)
+          && schoolToggle(schoolId, 'pollsEnabled')
+          && request.resource.data.keys().hasOnly([
+            'question', 'options', 'status', 'createdBy', 'createdByUid', 'createdAt'
+          ])
+          && request.resource.data.question is string
+          && request.resource.data.question.size() > 0
+          && request.resource.data.question.size() <= 160
+          && request.resource.data.options is list
+          && request.resource.data.options.size() >= 2
+          && request.resource.data.options.size() <= 6
+          && request.resource.data.status == 'open'
+          && request.resource.data.createdBy is string
+          && request.resource.data.createdBy.size() <= 60
+          && request.resource.data.createdByUid == request.auth.uid
+          && request.resource.data.createdAt == request.time;
+        allow update: if schoolAdmin(schoolId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['open', 'closed'];
+        allow delete: if schoolOwner(schoolId);
+
+        match /votes/{voterId} {
+          allow get, list: if true;
+          allow create: if schoolToggle(schoolId, 'pollsEnabled')
+            && get(/databases/$(database)/documents/schools/$(schoolId)/polls/$(pollId)).data.status == 'open'
+            && request.resource.data.keys().hasOnly(['option', 'createdAt'])
+            && request.resource.data.option is int
+            && request.resource.data.option >= 0
+            && request.resource.data.option < get(/databases/$(database)/documents/schools/$(schoolId)/polls/$(pollId)).data.options.size()
+            && request.resource.data.createdAt == request.time
+            && (schoolModeOn(schoolId)
+              ? (request.auth != null && request.auth.uid == voterId && schoolStudentEmailValid(schoolId))
+              : voterId.matches('^d_[a-z0-9]{20}$'));
+          allow update: if false;
+          allow delete: if schoolOwner(schoolId);
+        }
+      }
+
+      match /knowledge_base/{entryId} {
+        allow get, list: if true;
+        allow create: if schoolOwner(schoolId)
+          && request.resource.data.keys().hasOnly([
+            'title', 'category', 'content', 'createdAt',
+            'source', 'fileName', 'fileId', 'chunkIndex', 'chunkCount'
+          ])
+          && request.resource.data.keys().hasAll(['title', 'category', 'content', 'createdAt'])
+          && request.resource.data.get('source', 'pdf') == 'pdf'
+          && request.resource.data.get('fileName', '') is string
+          && request.resource.data.get('fileName', '').size() <= 200
+          && request.resource.data.get('fileId', '') is string
+          && request.resource.data.get('fileId', '').size() <= 64
+          && request.resource.data.get('chunkIndex', 0) is int
+          && request.resource.data.get('chunkCount', 1) is int
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 120
+          && request.resource.data.category is string
+          && request.resource.data.category.size() <= 40
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 20000
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolOwner(schoolId);
+      }
+
+      match /studentAliases/{studentUid} {
+        allow get: if request.auth != null
+          && (request.auth.uid == studentUid || schoolAdmin(schoolId));
+        allow list: if false;
+        allow create: if request.auth != null
+          && request.auth.uid == studentUid
+          && schoolFeature(schoolId, 'studentEmailRequired')
+          && schoolStudentEmailValid(schoolId)
+          && request.resource.data.keys().hasOnly(['displayName', 'createdAt'])
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.matches('^Student [A-F0-9]{12}$')
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolOwner(schoolId);
+      }
+
+      match /officers/{officerUid} {
+        allow get: if request.auth != null
+          && (schoolOwner(schoolId) || request.auth.uid == officerUid);
+        allow list: if schoolOwner(schoolId);
+        allow create: if request.auth != null
+          && request.auth.uid == officerUid
+          && request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'inviteId', 'createdAt'])
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.role == 'classOfficer'
+          && request.resource.data.inviteId is string
+          && getAfter(/databases/$(database)/documents/officerInvitations/$(request.resource.data.inviteId)).data.schoolId == schoolId
+          && getAfter(/databases/$(database)/documents/officerInvitations/$(request.resource.data.inviteId)).data.email == request.auth.token.email
+          && getAfter(/databases/$(database)/documents/officerInvitations/$(request.resource.data.inviteId)).data.status == 'accepted'
+          && getAfter(/databases/$(database)/documents/officerInvitations/$(request.resource.data.inviteId)).data.acceptedBy == request.auth.uid;
+        allow update: if false;
+        allow delete: if schoolOwner(schoolId);
+      }
+
+      match /announcements/{announcementId} {
+        allow get, list: if true;
+        allow create: if schoolAdmin(schoolId)
+          && schoolFeature(schoolId, 'announcementsEnabled')
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 120
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 2000
+          && (!('sticky' in request.resource.data)
+            || (request.resource.data.sticky is bool
+              && (request.resource.data.sticky == false || schoolOwner(schoolId))))
+          && request.resource.data.authorName is string
+          && request.resource.data.createdAt == request.time;
+        allow update: if schoolOwner(schoolId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['sticky'])
+          && request.resource.data.sticky is bool;
+        allow delete: if schoolOwner(schoolId);
+      }
+
+      match /questions/{questionId} {
+        allow get, list: if schoolFeature(schoolId, 'questionsEnabled') || schoolAdmin(schoolId);
+        allow create: if schoolFeature(schoolId, 'questionsEnabled')
+          && schoolFeature(schoolId, 'questionPostingEnabled')
+          && request.resource.data.keys().hasOnly(['content', 'authorName', 'createdAt'])
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0
+          && request.resource.data.content.size() <= 1200
+          && request.resource.data.authorName is string
+          && request.resource.data.authorName.size() > 0
+          && request.resource.data.authorName.size() <= 80
+          && (schoolAdmin(schoolId)
+            || schoolStudentCanPost(schoolId, request.resource.data.authorName))
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolAdmin(schoolId);
+
+        match /answers/{answerId} {
+          allow get, list: if schoolFeature(schoolId, 'questionsEnabled') || schoolAdmin(schoolId);
+          allow create: if schoolFeature(schoolId, 'questionsEnabled')
+            && request.resource.data.keys().hasOnly(['content', 'authorName', 'createdAt'])
+            && request.resource.data.content is string
+            && request.resource.data.content.size() > 0
+            && request.resource.data.content.size() <= 1200
+            && request.resource.data.authorName is string
+            && request.resource.data.authorName.size() > 0
+            && request.resource.data.createdAt == request.time
+            && (schoolAdmin(schoolId)
+              || (schoolFeature(schoolId, 'anyoneCanAnswerQuestions')
+                && schoolStudentCanPost(schoolId, request.resource.data.authorName)));
+          allow update: if false;
+          allow delete: if schoolAdmin(schoolId)
+            || (schoolFeature(schoolId, 'studentEmailRequired')
+              && schoolStudentCanPost(schoolId, resource.data.authorName));
+        }
+      }
+    }
+
+    match /officerInvitations/{inviteId} {
+      allow get: if request.auth != null
+        && (schoolOwner(resource.data.schoolId)
+          || resource.data.email == request.auth.token.email);
+      allow list: if request.auth != null
+        && (schoolOwner(resource.data.schoolId)
+          || resource.data.email == request.auth.token.email);
+      allow create: if request.auth != null
+        && schoolOwner(request.resource.data.schoolId)
+        && request.resource.data.keys().hasOnly(['schoolId', 'email', 'invitedBy', 'status', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
+        && request.resource.data.invitedBy == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow update: if request.auth != null
+        && ((schoolOwner(resource.data.schoolId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+            && request.resource.data.status == 'revoked')
+          || (resource.data.email == request.auth.token.email
+            && resource.data.status == 'pending'
+            && request.resource.data.status == 'accepted'
+            && request.resource.data.acceptedBy == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'acceptedBy', 'acceptedAt'])));
+      allow delete: if schoolOwner(resource.data.schoolId);
+    }
+
+    match /image_posts/{postId} {
+      allow get, list: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly([
+          'schoolId', 'imageUrl', 'caption', 'authorName', 'authorRole', 'createdAt'
+        ])
+        && request.resource.data.schoolId is string
+        && schoolAdmin(request.resource.data.schoolId)
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.matches('^https://.*')
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() <= 2000
+        && request.resource.data.authorName is string
+        && request.resource.data.authorName.size() > 0
+        && request.resource.data.authorName.size() <= 120
+        && request.resource.data.createdAt == request.time
+        && ((schoolOwner(request.resource.data.schoolId)
+            && request.resource.data.authorRole == 'admin')
+          || (!schoolOwner(request.resource.data.schoolId)
+            && exists(/databases/$(database)/documents/schools/$(request.resource.data.schoolId)/officers/$(request.auth.uid))
+            && request.resource.data.authorRole in ['representative', 'officer']));
+      allow update: if false;
+      allow delete: if schoolOwner(resource.data.schoolId);
+    }
+
+    match /site_activity/{eventId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'sessionId', 'visitorEmail', 'eventType', 'page', 'action', 'outcome', 'durationMs', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'sessionId', 'eventType', 'page', 'action', 'outcome', 'durationMs', 'createdAt'
+        ])
+        && request.resource.data.sessionId is string
+        && request.resource.data.sessionId.size() == 36
+        && (!('visitorEmail' in request.resource.data)
+          || (request.auth != null
+            && request.auth.token.email_verified == true
+            && request.resource.data.visitorEmail == request.auth.token.email))
+        && request.resource.data.eventType in ['page_view', 'page_exit', 'interaction', 'action_result']
+        && request.resource.data.page in ['/', '/student', '/admin']
+        && request.resource.data.action is string
+        && request.resource.data.action.matches('^[A-Za-z][A-Za-z0-9_-]{0,79}$')
+        && request.resource.data.outcome in ['none', 'attempt', 'success', 'failure']
+        && request.resource.data.durationMs is int
+        && request.resource.data.durationMs >= 0
+        && request.resource.data.durationMs <= 86400000
+        && ((request.resource.data.eventType == 'page_view'
+              && request.resource.data.action == 'page_view'
+              && request.resource.data.outcome == 'none'
+              && request.resource.data.durationMs == 0)
+          || (request.resource.data.eventType == 'page_exit'
+              && request.resource.data.action == 'page_exit'
+              && request.resource.data.outcome == 'none')
+          || (request.resource.data.eventType == 'interaction'
+              && request.resource.data.outcome == 'attempt'
+              && request.resource.data.durationMs == 0)
+          || (request.resource.data.eventType == 'action_result'
+              && request.resource.data.outcome in ['success', 'failure']
+              && request.resource.data.durationMs == 0))
+        && request.resource.data.createdAt == request.time;
+      allow get, list: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'syncoperating@gmail.com';
+      allow update, delete: if false;
+    }
+  }
+}

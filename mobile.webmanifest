@@ -1,0 +1,14 @@
+{
+  "name": "Fitch",
+  "short_name": "Fitch",
+  "description": "Your school community in your pocket.",
+  "start_url": "./mobile.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7f5",
+  "theme_color": "#245847",
+  "icons": [
+    { "src": "image/fitchLogo.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f4efe4">
+  <title>Devlog | Fitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Newsreader:opsz,wght@6..72,600;6..72,700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="image/fitchLogo.png">
+  <link rel="apple-touch-icon" href="image/fitchLogo.png">
+  <style>
+    :root {
+      --primary: #245847;
+      --ink: #1c2c27;
+      --muted: #65736c;
+      --line: #c9c2b6;
+      --surface: #fffdf8;
+      --paper: #f4efe4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 16px/1.7 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+    .devlog {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px clamp(18px, 5vw, 32px) 72px;
+    }
+    .devlog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .devlog-top img { width: 44px; height: 44px; padding: 5px; border-radius: 10px; background: var(--primary); object-fit: contain; }
+    .devlog-top a.back { color: var(--primary); font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-decoration: none; }
+    .devlog-top a.back:hover { text-decoration: underline; }
+    h1 {
+      margin: 0 0 8px;
+      font: 700 clamp(38px, 7vw, 54px)/1.05 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif;
+    }
+    h1 span { color: var(--primary); font-family: 'Newsreader', Georgia, serif; }
+    .lede { margin: 0 0 44px; color: var(--muted); }
+    .entry {
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+    }
+    .entry time { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .entry h2 { margin: 6px 0 10px; font: 700 24px/1.25 'Bricolage Grotesque', 'DM Sans', system-ui, sans-serif; }
+    .entry p { margin: 0 0 10px; }
+    .entry ul { margin: 0; padding-left: 20px; }
+    .entry li { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+  <main class="devlog">
+    <header class="devlog-top">
+      <a href="/" aria-label="Fitch home"><img src="image/fitchLogo.png" alt=""></a>
+      <a class="back" href="/">&larr; BACK TO FITCH</a>
+    </header>
+
+    <h1>Devlog<br><span>behind the build.</span></h1>
+    <p class="lede">Notes on how Fitch is being built, what changed, and what I'm working on next.</p>
+
+    <article class="entry">
+      <time datetime="2026-10-27">October 27, 2026</time>
+      <h2>Polish pass: sign-in, languages, and type</h2>
+      <ul>
+        <li>Google sign-in now opens the account chooser, and a signed-in user can switch accounts instead of being stuck on their default one.</li>
+        <li>Fixed garbled language names in the student board's translation dropdown (a text-encoding bug).</li>
+        <li>Refreshed the home page typography while keeping the dashboards and the colors the same.</li>
+      </ul>
+    </article>
+
+    <!-- Add new entries above this line, newest first:
+    <article class="entry">
+      <time datetime="YYYY-MM-DD">Month D, YYYY</time>
+      <h2>Title</h2>
+      <p>What changed and why.</p>
+    </article>
+    -->
+  </main>
+</body>
+</html>

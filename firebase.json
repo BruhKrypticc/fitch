@@ -1,0 +1,62 @@
+﻿{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "site": "fitch-6393c",
+    "public": ".",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "redirects": [
+      {
+        "source": "/admin.html",
+        "destination": "/admin",
+        "type": 301
+      },
+      {
+        "source": "/student.html",
+        "destination": "/student",
+        "type": 301
+      },
+      {
+        "source": "/index.html",
+        "destination": "/",
+        "type": 301
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/admin",
+        "destination": "/admin.html"
+      },
+      {
+        "source": "/student",
+        "destination": "/student.html"
+      },
+      {
+        "source": "/activity",
+        "destination": "/activity.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(png|jpg|jpeg|webp|svg|ico)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "firestore.rules",
+      "firestore.indexes.json",
+      "storage.rules",
+      "package.json",
+      "package-lock.json",
+      "node_modules/**",
+      "workers/**",
+      "dev/**",
+      ".firebaserc",
+      "**/.*"
+    ]
+  }
+}

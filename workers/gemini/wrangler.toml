@@ -1,0 +1,11 @@
+name = "finch-gemini-proxy"
+main = "index.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+routes = [
+  { pattern = "finch.krypticc.com", custom_domain = true }
+]
+
+# Set the key with: npx wrangler secret put GEMINI_API_KEY
+# Add your production origin(s): npx wrangler secret put ALLOWED_ORIGINS  (comma-separated)

@@ -1,0 +1,13 @@
+name = "finch-moderation"
+main = "index.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+routes = [
+  { pattern = "moderation.krypticc.com", custom_domain = true }
+]
+
+# Deploy:  npx wrangler deploy
+# Set the key with: npx wrangler secret put OPENAI_API_KEY
+# Add your production origin(s): npx wrangler secret put ALLOWED_ORIGINS  (comma-separated)
+# Then set MODERATION_URL in moderation.js to the deployed worker URL.
