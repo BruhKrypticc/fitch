@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="image/fitchBanner.png" alt="Fitch — For School Communities" width="100%" style="border-radius: 12px;">
+  <img src="image/fitchBanner1.png" alt="Fitch — For School Communities" width="100%" style="border-radius: 12px;">
 </p>
 
 > A secure real-time platform connecting students and school administration through student government.
