@@ -28,7 +28,7 @@ Fitch aims to connect the whole school community by providing real-time announce
 * Easy to comply with FERPA and COPPA standards.
 
 ### 2. Live Translation
-* Real-time translation of announcements and Q&A using the MyMemory API, supporting Spanish, Portuguese, Chinese, and English and so much more.
+* Real-time translation of announcements and Q&A using the MyMemory API, supporting Spanish, Portuguese, Chinese, and English and so many more languages.
 * Built with request guards (`translationRequestId`) and memoization caching to ensure zero UI delay.
 
 ### 3. Finch (AI Assistant)
@@ -36,7 +36,7 @@ Fitch aims to connect the whole school community by providing real-time announce
 * Uses lightweight RAG to answer questions based on school handbooks, bell schedules, and club updates.
 
 ### 4. Two-Stage Moderation
-* Live filtering combining a custom leetspeak regex blocklist with an OpenAI Omni-Moderation serverless proxy.
+* Live filtering combining a custom regex blocklist with an OpenAI Omni-Moderation serverless proxy.
 * Blocks offensive or cyberbullying language before posts reach public feeds.
 
 ### 5. Role-Based Access Control (RBAC)
@@ -46,7 +46,7 @@ Fitch aims to connect the whole school community by providing real-time announce
 
 ### 6. Custom Themes & Mobile
 * Calculates hover and contrast colors based on a school's main hex code using RGB scaling (`* 0.78`).
-* Dedicated mobile UI featuring iOS-style glassmorphism, safe area padding, and thumb-friendly layout.
+* Dedicated mobile interface featuring amazing UI I made, safe area padding, and thumb-friendly layout.
 
 ---
 
