@@ -14,9 +14,9 @@
 
 ## 📖 Overview
 
-Communication within high schools can be difficult. Whether it be paper posters, morning announcements, or social media, students often miss out on important information. In diverse linguistic areas such as the 3rd Congressional District of Massachusetts (Fitchburg, Lowell, Lawrence), many ESL students and families also face language barriers.
+Communication within high schools can be frustrating. Whether it be paper flyers, boring morning announcements, or social media, students often miss out on important information. In diverse areas like Fitchburg, Lawrence, and Lowell, many students and families face language barriers, as I have experienced myself. Growing up in a Spanish-speaking household, we missed out on events and activities because my parents never knew or had the ability to access the information in their native language, and that is why I built Fitch.
 
-**Fitch** aims to connect the whole school community by providing real-time announcements, Q&A with student officers, calendar integration, photo boards, live translation, and an AI assistant called **Finch**—all in one easy-to-use web application built without heavy frameworks.
+Fitch aims to connect the whole school community by providing real-time announcements, Q&A with student officers, calendar integration, photo boards, live translation, and an AI assistant called Finch—all in one easy-to-use web application built without heavy frameworks.
 
 ---
 
@@ -28,7 +28,7 @@ Communication within high schools can be difficult. Whether it be paper posters,
 * Easy to comply with FERPA and COPPA standards.
 
 ### 2. Live Translation
-* Real-time translation of announcements and Q&A using the MyMemory API, supporting Spanish, Portuguese, Chinese, and English.
+* Real-time translation of announcements and Q&A using the MyMemory API, supporting Spanish, Portuguese, Chinese, and English and so much more.
 * Built with request guards (`translationRequestId`) and memoization caching to ensure zero UI delay.
 
 ### 3. Finch (AI Assistant)
