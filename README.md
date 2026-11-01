@@ -58,7 +58,7 @@ flowchart TD
         Index["index.html (Join/Auth)"]
         Student["student.html (Student Board)"]
         Admin["admin.html (Organiser Console)"]
-        Mobile["mobile.html (Liquid Glass App)"]
+        Mobile["mobile.html (Web App)"]
     end
 
     subgraph Firebase ["Google Cloud Firebase"]
