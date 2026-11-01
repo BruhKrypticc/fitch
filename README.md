@@ -20,37 +20,37 @@ Communication within high schools can be difficult. Whether it be paper posters,
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔒 1. Privacy-Focused Join (No PII)
+### 1. Privacy-Focused Join (No PII)
 * Students log in with a random 5-character alphanumeric code.
 * No need to provide an email address, phone number, or password.
 * Easy to comply with FERPA and COPPA standards.
 
-### 🌐 2. Live Translation
+### 2. Live Translation
 * Real-time translation of announcements and Q&A using the MyMemory API, supporting Spanish, Portuguese, Chinese, and English.
 * Built with request guards (`translationRequestId`) and memoization caching to ensure zero UI delay.
 
-### 🐦 3. Finch (AI Assistant)
+### 3. Finch (AI Assistant)
 * Powered by Google Gemini 3.1 Flash Lite via a secure Cloudflare Worker proxy.
 * Uses lightweight RAG to answer questions based on school handbooks, bell schedules, and club updates.
 
-### 🛡️ 4. Two-Stage Moderation
+### 4. Two-Stage Moderation
 * Live filtering combining a custom leetspeak regex blocklist with an OpenAI Omni-Moderation serverless proxy.
 * Blocks offensive or cyberbullying language before posts reach public feeds.
 
-### 👑 5. Role-Based Access Control (RBAC)
+### 5. Role-Based Access Control (RBAC)
 * **School Organisers:** Log in using Google OAuth to set up schools, change theme colors, toggle features, pin announcements, and invite officers.
 * **Class Officers:** Verified users who can post announcements, moderate feeds, and reply to students with official badges.
 * **Students:** Can view announcements, translate posts, and ask questions.
 
-### 🎨 6. Custom Themes & Mobile
+### 6. Custom Themes & Mobile
 * Calculates hover and contrast colors based on a school's main hex code using RGB scaling (`* 0.78`).
 * Dedicated mobile UI featuring iOS-style glassmorphism, safe area padding, and thumb-friendly layout.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
@@ -96,7 +96,7 @@ flowchart TD
 
 ---
 
-## 🔐 Security
+## Security
 
 * **No Client Secrets:** All API keys (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `IMAGEKIT_PRIVATE_KEY`) are kept securely in Cloudflare Worker secrets.
 * **Atomic `getAfter()`:** Promoting officers requires verification in Firestore security rules to match their invite record within the same batch.
@@ -105,7 +105,7 @@ flowchart TD
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 ├── index.html             # Home page, code login, and Google Sign-in
@@ -129,7 +129,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -164,9 +164,6 @@ firebase deploy
 
 ---
 
-## 👤 Author
-
-**Jefferson Rojop**
 
 *3rd Congressional District of Massachusetts (MA-03)*
 
