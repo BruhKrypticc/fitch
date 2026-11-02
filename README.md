@@ -16,7 +16,7 @@
 
 Communication within high schools can be frustrating. Whether it be paper flyers, boring morning announcements, or social media, students often miss out on important information. In diverse areas like Fitchburg, Lawrence, and Lowell, many students and families face language barriers, as I have experienced myself. Growing up in a Spanish-speaking household, we missed out on events and activities because my parents never knew or had the ability to access the information in their native language, and that is why I built Fitch.
 
-Fitch aims to connect the whole school community by providing real-time announcements, Q&A with student officers, calendar integration, photo boards, live translation, and an AI assistant called Finch—all in one easy-to-use web application built without heavy frameworks.
+Fitch connects the whole school community with real-time announcements, Q&A with student officers, calendar integration, photo boards, live translation, and an AI assistant called Finch—all in one easy-to-use web application built without heavy frameworks.
 
 ---
 
@@ -42,11 +42,13 @@ Fitch aims to connect the whole school community by providing real-time announce
 ### 5. Role-Based Access Control (RBAC)
 * **School Organisers:** Log in using Google OAuth to set up schools, change theme colors, toggle features, pin announcements, and invite officers.
 * **Class Officers:** Verified users who can post announcements, moderate feeds, and reply to students with official badges.
-* **Students:** Can view announcements, translate posts, and ask questions.
+* **Students:** Can view announcements, translate posts, ask questions, and forward information to parents.
+* **Parents:** Can receive information seamlessly, no login required, and translate it to their preferred language. (coming soon!)
+
 
 ### 6. Custom Themes & Mobile
 * Calculates hover and contrast colors based on a school's main hex code using RGB scaling (`* 0.78`).
-* Dedicated mobile interface featuring amazing UI I made, safe area padding, and thumb-friendly layout.
+* Dedicated mobile interface featuring amazing UI I made, safe area padding, and finger-friendly layout.
 
 ---
 
