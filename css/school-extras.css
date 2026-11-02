@@ -163,6 +163,22 @@
   .xl-bar { transition: none; }
 }
 
+.xl-voice-host { display: grid; gap: 14px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--xl-line); }
+.xl-voice-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.xl-voice-stats:empty { display: none; }
+.xl-voice-stat { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--xl-line); border-radius: 10px; background: var(--xl-surface); }
+.xl-voice-stat strong { font-size: 20px; }
+.xl-voice-stat span { color: var(--xl-muted); font-size: 12px; }
+.xl-module .xl-voice-input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--xl-line); border-radius: 8px;
+  background: var(--xl-surface); color: var(--xl-ink); font: 500 14px/1.4 var(--xl-font); resize: vertical;
+}
+.xl-voice-reply { display: grid; gap: 2px; padding: 10px 12px; border-left: 3px solid var(--xl-primary); border-radius: 6px; background: color-mix(in srgb, var(--xl-primary) 8%, transparent); }
+.xl-voice-reply p { margin: 0; font-size: 14px; }
+
+/* Finch gaps, flyer and parent link */
+.xl-gap-count { flex: none; min-width: 28px; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--xl-primary) 16%, transparent); font-size: 12px; font-weight: 700; text-align: center; }
+
 /* Feature toggle list in Finch Settings */
 .finch-flag-group { display: grid; gap: 8px; margin: 14px 0; }
 .finch-flag-group > h4 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }

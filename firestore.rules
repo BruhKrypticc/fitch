@@ -221,6 +221,50 @@ service cloud.firestore {
         }
       }
 
+      // Student Voice: anonymous ideas, upvotes and public officer responses.
+      match /ideas/{ideaId} {
+        allow get, list: if true;
+        allow create: if schoolToggle(schoolId, 'pollsEnabled')
+          && request.resource.data.keys().hasOnly(['content', 'status', 'createdAt'])
+          && request.resource.data.content is string
+          && request.resource.data.content.size() >= 5
+          && request.resource.data.content.size() <= 280
+          && request.resource.data.status == 'open'
+          && request.resource.data.createdAt == request.time
+          && (!schoolModeOn(schoolId) || schoolStudentEmailValid(schoolId));
+        allow update: if schoolAdmin(schoolId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'response', 'respondedAt'])
+          && request.resource.data.status in ['open', 'review', 'planned', 'done', 'declined']
+          && request.resource.data.get('response', '') is string
+          && request.resource.data.get('response', '').size() <= 400
+          && request.resource.data.respondedAt == request.time;
+        allow delete: if schoolAdmin(schoolId);
+
+        match /votes/{voterId} {
+          allow get, list: if true;
+          allow create: if schoolToggle(schoolId, 'pollsEnabled')
+            && request.resource.data.keys().hasOnly(['createdAt'])
+            && request.resource.data.createdAt == request.time
+            && (schoolModeOn(schoolId)
+              ? (request.auth != null && request.auth.uid == voterId && schoolStudentEmailValid(schoolId))
+              : voterId.matches('^d_[a-z0-9]{20}$'));
+          allow update: if false;
+          allow delete: if schoolOwner(schoolId);
+        }
+      }
+
+      // Questions Finch could not answer, logged anonymously for organizers.
+      match /finch_gaps/{gapId} {
+        allow get, list: if schoolAdmin(schoolId);
+        allow create: if request.resource.data.keys().hasOnly(['question', 'createdAt'])
+          && request.resource.data.question is string
+          && request.resource.data.question.size() >= 3
+          && request.resource.data.question.size() <= 200
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolAdmin(schoolId);
+      }
+
       match /knowledge_base/{entryId} {
         allow get, list: if true;
         allow create: if schoolOwner(schoolId)

@@ -16,6 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { openPhotoPreview } from "./photo-utils.js";
 import { passesModeration } from "./moderation.js";
+import { translate } from "./translate-engine.js";
 import { toGoogleCalendarEmbedUrl } from "./calendar.js";
 import { applySchoolTheme } from "./school-theme.js";
 import {
@@ -203,7 +204,6 @@ const state = {
   langRun: 0
 };
 const answerUnsubscribers = new Map();
-const translationCache = new Map();
 
 els.schoolName.textContent = schoolName;
 els.badge.textContent = studentName;
@@ -297,28 +297,8 @@ function applyFeatureVisibility() {
   updateFab();
 }
 
-/* ---------- Translation (MyMemory) ---------- */
-async function translateText(text, targetLang) {
-  const key = `${targetLang}::${text}`;
-  if (translationCache.has(key)) return translationCache.get(key);
-  const chunks = text.match(/[\s\S]{1,450}(?:\s|$)|[\s\S]+/g) || [text];
-  const parts = [];
-  for (const chunk of chunks) {
-    if (!chunk.trim()) { parts.push(chunk); continue; }
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=en|${targetLang}&de=studenthub@example.com`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Translation failed (${response.status}).`);
-    const data = await response.json();
-    const translated = data?.responseData?.translatedText;
-    if (typeof translated !== "string" || data.responseStatus >= 400) {
-      throw new Error(data?.responseDetails || "Translation failed.");
-    }
-    parts.push(translated);
-  }
-  const result = parts.join("");
-  translationCache.set(key, result);
-  return result;
-}
+/* ---------- Translation (shared engine) ---------- */
+const translateText = translate;
 
 async function applyLanguage() {
   const run = ++state.langRun;

@@ -37,6 +37,14 @@
       {
         "source": "/activity",
         "destination": "/activity.html"
+      },
+      {
+        "source": "/parent",
+        "destination": "/parent.html"
+      },
+      {
+        "source": "/flyer",
+        "destination": "/flyer.html"
       }
     ],
     "headers": [
