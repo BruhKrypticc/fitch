@@ -4,7 +4,6 @@ import {
 import { db } from "./firebase.js";
 import { cachedTranslation, currentLanguage, onLanguageChange, translateText } from "./memory-translate.js";
 import { passesModeration } from "./moderation.js";
-import { mountStudentVoice } from "./student-voice.js";
 
 const MAX_OPTIONS = 6;
 const DEVICE_KEY = "fitchVoterDevice";
@@ -289,13 +288,8 @@ export function mountPolls(root, { schoolId, manager = null, voting = { schoolMo
     root.querySelectorAll("[data-original]").forEach((node) => tr(node, node.dataset.original));
   });
 
-  const voiceHost = el("div", "xl-voice-host");
-  root.append(voiceHost);
-  const stopVoice = mountStudentVoice(voiceHost, { schoolId, manager, voting });
-
   return () => {
     stop();
-    stopVoice();
     stopLanguage();
     voteUnsubs.forEach((u) => u());
     voteUnsubs.clear();
