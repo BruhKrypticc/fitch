@@ -5,33 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#245847">
   <title>Fitch | School updates for families</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/parent.css">
   <link rel="icon" type="image/png" href="image/fitchLogo.png">
   <link rel="apple-touch-icon" href="image/fitchLogo.png">
 </head>
 <body>
-  <main class="parent-page">
-    <header class="parent-header">
-      <img class="parent-logo" src="image/fitchLogo.png" alt="">
-      <div>
-        <p class="parent-eyebrow" id="parentEyebrow">School updates for families</p>
+  <div class="p-bg" aria-hidden="true"></div>
+  <header class="p-header">
+    <div class="p-header-top">
+      <img class="p-logo" src="image/fitchLogo.png" alt="">
+      <div class="p-title">
         <h1 id="parentSchoolName">Loading…</h1>
+        <span id="parentEyebrow">School updates for families</span>
       </div>
-    </header>
-
-    <div class="parent-controls">
-      <label for="parentLanguage" id="parentLanguageLabel">Language</label>
-      <select id="parentLanguage"></select>
-      <button id="parentListenAll" type="button" hidden>Listen to all</button>
     </div>
-    <p id="parentNote" class="parent-note" role="status" aria-live="polite"></p>
+    <div id="parentLangs" class="p-langs" role="radiogroup" aria-label="Language"></div>
+    <p id="parentNote" class="p-note" role="status" aria-live="polite"></p>
+  </header>
 
-    <section id="parentList" class="parent-list" aria-live="polite"></section>
-
-    <footer class="parent-footer">
-      <p id="parentFooter">Translations are made by AI and may contain mistakes. Check important details with the school office.</p>
-    </footer>
+  <main class="p-main">
+    <section id="parentList" class="p-list" aria-live="polite"></section>
+    <p class="p-footer">Translations are made by AI and may contain mistakes. Check important details with the school office.</p>
   </main>
   <script type="module" src="js/parent.js"></script>
 </body>

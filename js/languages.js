@@ -1,18 +1,18 @@
-// Languages offered for family-facing pages. `speech` is the BCP 47 tag used for read-aloud.
+// Languages offered on the family page.
 export const LANGUAGES = [
-  { code: "en", label: "English", speech: "en-US" },
-  { code: "es", label: "Español", speech: "es-ES" },
-  { code: "pt", label: "Português", speech: "pt-BR" },
-  { code: "fr", label: "Français", speech: "fr-FR" },
-  { code: "vi", label: "Tiếng Việt", speech: "vi-VN" },
-  { code: "zh", label: "中文 (普通话)", speech: "zh-CN" },
-  { code: "ht", label: "Kreyòl Ayisyen", speech: "ht-HT" },
-  { code: "ar", label: "العربية", speech: "ar-SA" },
-  { code: "hi", label: "हिन्दी", speech: "hi-IN" },
-  { code: "ru", label: "Русский", speech: "ru-RU" },
-  { code: "ko", label: "한국어", speech: "ko-KR" },
-  { code: "tl", label: "Tagalog", speech: "fil-PH" },
-  { code: "so", label: "Soomaali", speech: "so-SO" }
+  { code: "en", label: "English" },
+  { code: "es", label: "Español" },
+  { code: "pt", label: "Português" },
+  { code: "fr", label: "Français" },
+  { code: "vi", label: "Tiếng Việt" },
+  { code: "zh", label: "中文 (普通话)" },
+  { code: "ht", label: "Kreyòl Ayisyen" },
+  { code: "ar", label: "العربية" },
+  { code: "hi", label: "हिन्दी" },
+  { code: "ru", label: "Русский" },
+  { code: "ko", label: "한국어" },
+  { code: "tl", label: "Tagalog" },
+  { code: "so", label: "Soomaali" }
 ];
 
 export const RTL_LANGUAGES = new Set(["ar"]);

@@ -184,6 +184,8 @@ export function mountPolls(root, { schoolId, manager = null, voting = { schoolMo
     node.append(top);
 
     const needsLogin = !manager && voting.schoolMode && !voterId;
+    const choices = el("div", showResults ? "xl-results" : "xl-choices");
+    node.append(choices);
     poll.options.forEach((label, index) => {
       const percent = total ? Math.round((counts[index] / total) * 100) : 0;
       if (showResults) {
@@ -195,7 +197,7 @@ export function mountPolls(root, { schoolId, manager = null, voting = { schoolMo
         if (mine === index) text.append(checkIcon());
         const num = el("span", "xl-result-num", `${counts[index]} · ${percent}%`);
         row.append(bar, text, num);
-        node.append(row);
+        choices.append(row);
       } else {
         const btn = tel("button", "xl-option", label);
         btn.type = "button";
@@ -215,7 +217,7 @@ export function mountPolls(root, { schoolId, manager = null, voting = { schoolMo
             renderCard(card);
           }
         });
-        node.append(btn);
+        choices.append(btn);
       }
     });
 
