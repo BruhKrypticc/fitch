@@ -63,6 +63,25 @@ export function showFinchAlert(
 }
 
 /**
+ * Silent moderation for background logging: resolves true only when the service confirms the
+ * text is clean. Unlike passesModeration it never alerts the user and fails closed.
+ */
+export async function isCleanSilently(text) {
+  try {
+    const response = await fetch(MODERATION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texts: [String(text)] }),
+      signal: AbortSignal.timeout(TIMEOUT_MS)
+    });
+    if (!response.ok) return false;
+    return (await response.json()).flagged === false;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Checks user-submitted text with OpenAI moderation (via the proxy worker).
  * Resolves true when the content may be saved. When it is flagged, shows the Finch alert and
  * resolves false. If the moderation service is unreachable the check is skipped so the school

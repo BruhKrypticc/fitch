@@ -699,21 +699,7 @@ if (!schoolId || !schoolName) {
             await showModal("Could not remove announcement", `Firebase error (${error.code || "unknown"}): ${error.message || "Try again."}`);
           }
         });
-        const flyerLink = document.createElement("a");
-        flyerLink.className = "announcement-sticky-toggle";
-        flyerLink.href = `/flyer?s=${encodeURIComponent(schoolId)}&a=${encodeURIComponent(announcementDoc.id)}`;
-        flyerLink.target = "_blank";
-        flyerLink.rel = "noopener";
-        flyerLink.title = "Printable multilingual flyer";
-        flyerLink.setAttribute("aria-label", "Open printable multilingual flyer");
-        flyerLink.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M7 9V4h10v5"></path>
-            <path d="M7 18H5a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"></path>
-            <path d="M7 14h10v6H7z"></path>
-          </svg>
-        `;
-        actions.append(stickyButton, flyerLink, removeButton);
+        actions.append(stickyButton, removeButton);
         article.append(actions);
       }
       list.append(article);
