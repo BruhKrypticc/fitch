@@ -8,46 +8,45 @@ const LANG_KEY = "fitchParentLang";
 const byId = (id) => document.getElementById(id);
 const schoolId = new URLSearchParams(location.search).get("s");
 
-const select = byId("parentLanguage");
+const pills = byId("parentLangs");
 const list = byId("parentList");
 const note = byId("parentNote");
-const listenAll = byId("parentListenAll");
 
-for (const lang of LANGUAGES) {
-  const option = document.createElement("option");
-  option.value = lang.code;
-  option.textContent = lang.label;
-  select.append(option);
-}
-
-function detectLanguage() {
+let language = (() => {
   const saved = localStorage.getItem(LANG_KEY);
   if (LANGUAGES.some((l) => l.code === saved)) return saved;
   const browser = (navigator.language || "en").slice(0, 2).toLowerCase();
   return LANGUAGES.some((l) => l.code === browser) ? browser : "en";
-}
-
-select.value = detectLanguage();
+})();
 let announcements = [];
-let datesHidden = false;
+let loaded = false;
 let renderToken = 0;
 
-function speechTag(code) {
-  return LANGUAGES.find((l) => l.code === code)?.speech || "en-US";
-}
-
-function hasVoice(code) {
-  if (!("speechSynthesis" in window)) return false;
-  const prefix = speechTag(code).slice(0, 2).toLowerCase();
-  return speechSynthesis.getVoices().some((v) => v.lang.toLowerCase().startsWith(prefix));
-}
-
-function speak(text, code) {
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = speechTag(code);
-  utterance.rate = 0.95;
-  speechSynthesis.speak(utterance);
+function buildPills() {
+  pills.replaceChildren();
+  for (const lang of LANGUAGES) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "p-pill";
+    button.textContent = lang.label;
+    button.dataset.lang = lang.code;
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", String(lang.code === language));
+    button.classList.toggle("is-active", lang.code === language);
+    button.addEventListener("click", () => {
+      if (language === lang.code) return;
+      language = lang.code;
+      localStorage.setItem(LANG_KEY, language);
+      pills.querySelectorAll(".p-pill").forEach((p) => {
+        const active = p.dataset.lang === language;
+        p.classList.toggle("is-active", active);
+        p.setAttribute("aria-checked", String(active));
+      });
+      render();
+    });
+    pills.append(button);
+  }
+  pills.querySelector(".is-active")?.scrollIntoView({ inline: "center", block: "nearest" });
 }
 
 async function inLanguage(text, code) {
@@ -62,76 +61,73 @@ async function inLanguage(text, code) {
   }
 }
 
+function showSkeleton() {
+  list.replaceChildren(...[0, 1].map(() => Object.assign(document.createElement("div"), { className: "p-skeleton" })));
+}
+
 async function render() {
   const token = ++renderToken;
-  const code = select.value;
-  localStorage.setItem(LANG_KEY, code);
+  const code = language;
   document.documentElement.lang = code;
   document.documentElement.dir = RTL_LANGUAGES.has(code) ? "rtl" : "ltr";
-  speechSynthesis?.cancel?.();
+  if (!loaded) return;
 
-  list.replaceChildren();
   if (!announcements.length) {
     const empty = document.createElement("p");
-    empty.className = "parent-empty";
+    empty.className = "p-empty";
     empty.textContent = "No announcements right now.";
-    list.append(empty);
-    listenAll.hidden = true;
+    list.replaceChildren(empty);
+    note.textContent = "";
     return;
   }
 
-  note.textContent = code === "en" ? "" : "Translating…";
+  const needsWork = code !== "en";
+  note.textContent = needsWork ? "Translating…" : "";
+  if (needsWork && announcements.some((a) => getCachedTranslation(a.title, code) === undefined)) showSkeleton();
+
   const items = await Promise.all(announcements.map(async (item) => ({
     ...item,
     title: await inLanguage(item.title, code),
     content: await inLanguage(item.content, code)
   })));
   if (token !== renderToken) return;
-  note.textContent = code !== "en" && !hasVoice(code) && "speechSynthesis" in window
-    ? "Listening may not be available in this language on your device."
-    : "";
+  note.textContent = "";
 
-  const canSpeak = "speechSynthesis" in window;
-  listenAll.hidden = !canSpeak;
-  listenAll.onclick = () => speak(items.map((i) => `${i.title}. ${i.content}`).join(" . "), code);
-
-  for (const item of items) {
+  list.replaceChildren(...items.map((item) => {
     const card = document.createElement("article");
-    card.className = "parent-card";
+    card.className = `p-card${item.sticky ? " is-pinned" : ""}`;
+    if (item.sticky) {
+      const pin = document.createElement("span");
+      pin.className = "p-pin";
+      pin.textContent = "Pinned";
+      card.append(pin);
+    }
     const title = document.createElement("h2");
     title.textContent = item.title;
     const body = document.createElement("p");
     body.textContent = item.content;
-    const meta = document.createElement("span");
-    meta.className = "parent-meta";
-    meta.textContent = datesHidden || !item.date ? "" : item.date;
+    const meta = document.createElement("p");
+    meta.className = "p-meta";
+    meta.textContent = item.date;
     card.append(title, body, meta);
-    if (canSpeak) {
-      const actions = document.createElement("div");
-      actions.className = "parent-card-actions";
-      const listen = document.createElement("button");
-      listen.type = "button";
-      listen.textContent = "Listen";
-      listen.addEventListener("click", () => speak(`${item.title}. ${item.content}`, code));
-      actions.append(listen);
-      card.append(actions);
-    }
-    list.append(card);
-  }
+    return card;
+  }));
 }
 
-select.addEventListener("change", render);
-if ("speechSynthesis" in window) speechSynthesis.addEventListener?.("voiceschanged", () => render());
-
 async function start() {
+  buildPills();
+  showSkeleton();
   if (!schoolId) {
     byId("parentSchoolName").textContent = "School link not found";
+    list.replaceChildren();
     return;
   }
+  let datesHidden = false;
   try {
     const snapshot = await getDoc(doc(db, "schools", schoolId));
     if (!snapshot.exists()) {
       byId("parentSchoolName").textContent = "School not found";
+      list.replaceChildren();
       return;
     }
     const school = snapshot.data();
@@ -140,12 +136,16 @@ async function start() {
     applySchoolTheme(school.theme && typeof school.theme === "object" ? school.theme : {});
     datesHidden = school.features?.hideDatesAndTimes === true;
     if (school.features?.announcementsEnabled === false) {
-      list.textContent = "This school has not published announcements.";
+      const off = document.createElement("p");
+      off.className = "p-empty";
+      off.textContent = "This school hasn’t published announcements.";
+      list.replaceChildren(off);
       return;
     }
   } catch (error) {
     console.error("Could not load school:", error);
     byId("parentSchoolName").textContent = "Could not load this school";
+    list.replaceChildren();
     return;
   }
 
@@ -157,14 +157,19 @@ async function start() {
         return {
           title: typeof data.title === "string" && data.title.trim() ? data.title : "Announcement",
           content: typeof data.content === "string" ? data.content : "",
-          date: data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : ""
+          sticky: data.sticky === true,
+          date: datesHidden || !data.createdAt?.toDate ? "" : data.createdAt.toDate().toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
         };
-      });
+      }).sort((a, b) => Number(b.sticky) - Number(a.sticky));
+      loaded = true;
       render();
     },
     (error) => {
       console.error("Could not load announcements:", error);
-      list.textContent = "Announcements could not be loaded.";
+      const failed = document.createElement("p");
+      failed.className = "p-empty";
+      failed.textContent = "Announcements could not be loaded.";
+      list.replaceChildren(failed);
     }
   );
 }

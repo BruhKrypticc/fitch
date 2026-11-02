@@ -64,7 +64,19 @@ export function mountDocumentLocker(root, { schoolId, manager = null }) {
   else root.append(header, tools, list);
 
   function buildUploadForm() {
+    const wrap = el("div", "xl-upload");
+    const toggle = el("button", "xl-btn xl-btn-primary xl-upload-toggle", "+ Add document");
+    toggle.type = "button";
+    toggle.setAttribute("aria-expanded", "false");
+
     const form = el("form", "xl-form");
+    form.hidden = true;
+    toggle.addEventListener("click", () => {
+      form.hidden = !form.hidden;
+      toggle.setAttribute("aria-expanded", String(!form.hidden));
+      toggle.textContent = form.hidden ? "+ Add document" : "Cancel";
+    });
+
     const title = el("input");
     title.type = "text";
     title.maxLength = 90;
@@ -73,18 +85,22 @@ export function mountDocumentLocker(root, { schoolId, manager = null }) {
     const category = el("select");
     category.setAttribute("aria-label", "Category");
     for (const name of DOCUMENT_CATEGORIES) category.append(new Option(name, name));
-    const file = el("input");
+    const file = el("input", "xl-file-input");
     file.type = "file";
     file.accept = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.png,.jpg,.jpeg";
     file.setAttribute("aria-label", "File");
+    const picker = el("label", "xl-file-pick");
+    const pickerName = el("span", "xl-file-name", "Choose a file");
+    picker.append(file, pickerName);
+    file.addEventListener("change", () => { pickerName.textContent = file.files?.[0]?.name || "Choose a file"; });
     const submit = el("button", "xl-btn xl-btn-primary", "Upload");
     submit.type = "submit";
     const status = el("p", "xl-status");
     status.setAttribute("aria-live", "polite");
     const hint = el("p", "xl-hint",
       "Anyone with the file link can open it, so don’t upload private student information. PDF, Office, text or image, up to 20 MB.");
-    form.append(title, category, file, submit, status, hint);
-
+    form.append(title, category, picker, submit, status, hint);
+    wrap.append(toggle, form);
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const chosen = file.files?.[0];
@@ -107,6 +123,7 @@ export function mountDocumentLocker(root, { schoolId, manager = null }) {
           createdAt: serverTimestamp()
         });
         form.reset();
+        pickerName.textContent = "Choose a file";
         status.textContent = "Uploaded.";
       } catch (error) {
         console.error("Document upload failed:", error);
@@ -117,7 +134,7 @@ export function mountDocumentLocker(root, { schoolId, manager = null }) {
         submit.disabled = false;
       }
     });
-    return form;
+    return wrap;
   }
 
   function renderChips() {

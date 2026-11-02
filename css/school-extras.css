@@ -54,6 +54,16 @@
 }
 
 .xl-module .xl-form input[type="file"] { padding: 9px 12px; height: auto; }
+.xl-upload { display: grid; gap: 10px; justify-items: start; }
+.xl-upload .xl-form { width: 100%; }
+.xl-module .xl-form .xl-file-input { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; opacity: 0; overflow: hidden; pointer-events: none; }
+.xl-file-pick {
+  position: relative; display: flex; align-items: center; min-height: 44px; padding: 0 12px;
+  border: 1.5px dashed var(--xl-line); border-radius: 8px; color: var(--xl-muted); font-size: 14px; cursor: pointer;
+}
+.xl-file-pick:hover, .xl-file-pick:focus-within { border-color: var(--xl-primary); color: var(--xl-ink); }
+.xl-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xl-upload .xl-form .xl-btn-primary, .xl-module .xl-form > .xl-btn { justify-self: start; }
 .xl-options-edit { display: grid; gap: 8px; }
 
 .xl-module .xl-btn,
@@ -127,20 +137,23 @@
 }
 .xl-badge.is-closed { background: rgb(128 128 128 / 18%); color: var(--xl-muted); }
 
-.xl-module .xl-option { width: 100%; justify-content: flex-start; min-height: 44px; text-align: left; }
+.xl-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.xl-module .xl-option { width: auto; max-width: 100%; justify-content: center; min-height: 38px; padding: 0 16px; border-radius: 999px !important; text-align: center; white-space: normal; }
+.xl-module .xl-option:hover:not(:disabled) { border-color: var(--xl-primary); background: color-mix(in srgb, var(--xl-primary) 8%, var(--xl-surface)); }
+.xl-results { display: grid; gap: 6px; }
 
 .xl-result {
   position: relative;
   display: flex;
-  min-height: 42px;
+  min-height: 36px;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   overflow: hidden;
   padding: 0 12px;
   border: 1px solid var(--xl-line);
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 999px;
+  font-size: 13px;
 }
 .xl-result.is-mine { border-color: var(--xl-primary); }
 .xl-bar {
