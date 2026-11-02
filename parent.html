@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#245847">
+  <title>Fitch | School updates for families</title>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/parent.css">
+  <link rel="icon" type="image/png" href="image/fitchLogo.png">
+  <link rel="apple-touch-icon" href="image/fitchLogo.png">
+</head>
+<body>
+  <main class="parent-page">
+    <header class="parent-header">
+      <img class="parent-logo" src="image/fitchLogo.png" alt="">
+      <div>
+        <p class="parent-eyebrow" id="parentEyebrow">School updates for families</p>
+        <h1 id="parentSchoolName">Loading…</h1>
+      </div>
+    </header>
+
+    <div class="parent-controls">
+      <label for="parentLanguage" id="parentLanguageLabel">Language</label>
+      <select id="parentLanguage"></select>
+      <button id="parentListenAll" type="button" hidden>Listen to all</button>
+    </div>
+    <p id="parentNote" class="parent-note" role="status" aria-live="polite"></p>
+
+    <section id="parentList" class="parent-list" aria-live="polite"></section>
+
+    <footer class="parent-footer">
+      <p id="parentFooter">Translations are made by AI and may contain mistakes. Check important details with the school office.</p>
+    </footer>
+  </main>
+  <script type="module" src="js/parent.js"></script>
+</body>
+</html>

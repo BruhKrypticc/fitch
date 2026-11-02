@@ -20,20 +20,9 @@ import { toGoogleCalendarEmbedUrl } from "./calendar.js";
 import { openPhotoPreview, uploadPhoto } from "./photo-utils.js";
 import { lookupInterfaceTranslation } from "./translations.js";
 import { passesModeration } from "./moderation.js";
+import { translate } from "./translate-engine.js";
 
-async function translateWithAPI(text, targetLang) {
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}&de=studenthub@example.com`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Translation request failed (${response.status}).`);
-  }
-
-  const data = await response.json();
-  if (data.responseStatus !== 200 || typeof data.responseData?.translatedText !== "string") {
-    throw new Error(data.responseDetails || "Translation service returned an invalid response.");
-  }
-  return data.responseData.translatedText;
-}
+const translateWithAPI = translate;
 
 const translationCache = new Map();
 
