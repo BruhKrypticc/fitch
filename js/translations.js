@@ -1,4 +1,3 @@
-// Column order for every row: es, pt, fr, vi, zh, ht, ar, hi, ru, ko, tl, so
 export const DICTIONARY_LANGUAGES = ["es", "pt", "fr", "vi", "zh", "ht", "ar", "hi", "ru", "ko", "tl", "so"];
 
 const ROWS = {
