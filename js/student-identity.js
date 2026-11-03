@@ -3,8 +3,6 @@
 const STUDENT_NAME_MIN_LENGTH = 1;
 const STUDENT_NAME_MAX_LENGTH = 40;
 
-// Used only in non-required mode: students type and keep their own display name.
-// Never auto-generate or overwrite a name a student already set.
 export function getStoredStudentName() {
   try {
     return (localStorage.getItem("studentName") || "").trim();
@@ -29,8 +27,6 @@ export function isValidStudentName(name) {
   return trimmed.length >= STUDENT_NAME_MIN_LENGTH && trimmed.length <= STUDENT_NAME_MAX_LENGTH;
 }
 
-// Used only when the organizer requires verified school Google sign-in:
-// students receive a generated alias instead of a typed name.
 export async function getStudentAccountAlias(db, schoolId, userId) {
   const aliasRef = doc(db, "schools", schoolId, "studentAliases", userId);
   const aliasSnapshot = await getDoc(aliasRef);

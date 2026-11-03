@@ -147,7 +147,6 @@ if (schoolId && schoolName) {
           `This school requires a Google account ending in @${school.studentEmailDomain}.`;
         throw new Error("School Google account required.");
       }
-      // In non-required mode, reuse the student's previously saved name; never regenerate it.
       studentName = school.features?.studentEmailRequired === true && initialUser
         ? await getStudentAccountAlias(db, schoolId, initialUser.uid)
         : (localStorage.getItem("studentName") || "").trim();
@@ -231,7 +230,6 @@ function el(tag, className, text) {
   return node;
 }
 
-// Text that can be translated carries its source in data-original.
 function translatable(tag, className, text) {
   const node = el(tag, className, text);
   node.dataset.original = text;
@@ -250,7 +248,6 @@ function showToast(message) {
   toastTimer = setTimeout(() => { els.toast.hidden = true; }, 2600);
 }
 
-/* ---------- Tabs ---------- */
 function activateTab(name) {
   state.tab = name;
   document.querySelectorAll(".m-tab").forEach((button) => {
@@ -297,7 +294,6 @@ function applyFeatureVisibility() {
   updateFab();
 }
 
-/* ---------- Translation (shared engine) ---------- */
 const translateText = translate;
 
 async function applyLanguage() {
@@ -343,7 +339,6 @@ document.querySelectorAll(".m-pill").forEach((pill) => {
   });
 });
 
-/* ---------- Announcements ---------- */
 function announcementCard(announcement, index) {
   const pinned = announcement.sticky === true;
   const card = el("article", `m-card${pinned ? " is-pinned" : ""}`);
@@ -384,7 +379,6 @@ function renderAnnouncements() {
   if (state.lang !== "en") applyLanguage();
 }
 
-/* ---------- Questions & answers ---------- */
 function clearAnswerListeners() {
   answerUnsubscribers.forEach((unsubscribe) => unsubscribe());
   answerUnsubscribers.clear();
@@ -464,11 +458,9 @@ function renderQuestions() {
   if (state.lang !== "en") applyLanguage();
 }
 
-/* ---------- Calendar ---------- */
 function renderCalendar() {
   const link = $("mCalendarLink");
   if (state.calendarUrl && state.tab === "calendar") {
-    // Agenda view is far more readable on a phone than the month grid.
     const url = new URL(state.calendarUrl);
     url.searchParams.set("mode", "AGENDA");
     const target = url.toString();
@@ -491,7 +483,6 @@ function renderCalendar() {
   }
 }
 
-/* ---------- Photos ---------- */
 function renderPhotos() {
   const snapshot = state.photos;
   els.photos.replaceChildren();
@@ -522,7 +513,6 @@ function renderPhotos() {
   });
 }
 
-/* ---------- Bottom sheet composer ---------- */
 let sheetContext = null;
 
 function openSheet(context) {
@@ -603,7 +593,6 @@ els.sheet.addEventListener("submit", async (event) => {
   }
 });
 
-/* ---------- Exit ---------- */
 els.exit.addEventListener("click", () => {
   localStorage.removeItem("schoolId");
   localStorage.removeItem("schoolName");
@@ -611,7 +600,6 @@ els.exit.addEventListener("click", () => {
   window.location.reload();
 });
 
-/* ---------- Firestore listeners ---------- */
 renderAnnouncements();
 renderQuestions();
 renderPhotos();

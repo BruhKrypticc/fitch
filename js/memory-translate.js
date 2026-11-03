@@ -1,16 +1,13 @@
-// Language-selection layer over the shared translation engine (js/translate-engine.js).
 import { getCachedTranslation, translate } from "./translate-engine.js";
 
 const listeners = new Set();
 
-// Student page uses a <select>; the mobile app uses radio pills. Admin has neither (English).
 export function currentLanguage() {
   const select = document.getElementById("language-selector");
   if (select?.value) return select.value;
   return document.querySelector(".m-pill.is-active")?.dataset.lang || "en";
 }
 
-// Calls back whenever the language control changes; returns an unsubscribe function.
 export function onLanguageChange(callback) {
   if (!listeners.size) {
     document.addEventListener("change", notify);
@@ -32,7 +29,6 @@ function notify(event) {
 
 function notifyAfterClick(event) {
   if (!event.target.closest?.(".m-pill")) return;
-  // The mobile pill handler updates the active class in the same click; read after it ran.
   setTimeout(() => listeners.forEach((fn) => fn(currentLanguage())), 0);
 }
 

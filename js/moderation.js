@@ -1,6 +1,5 @@
 import { createFinchAvatar } from "./finch-brand.js";
 
-// Set after deploying workers/moderation/. The OpenAI key lives only in that worker.
 export const MODERATION_URL = "https://moderation.krypticc.com";
 const TIMEOUT_MS = 8000;
 
@@ -62,10 +61,6 @@ export function showFinchAlert(
   });
 }
 
-/**
- * Silent moderation for background logging: resolves true only when the service confirms the
- * text is clean. Unlike passesModeration it never alerts the user and fails closed.
- */
 export async function isCleanSilently(text) {
   try {
     const response = await fetch(MODERATION_URL, {
@@ -81,12 +76,6 @@ export async function isCleanSilently(text) {
   }
 }
 
-/**
- * Checks user-submitted text with OpenAI moderation (via the proxy worker).
- * Resolves true when the content may be saved. When it is flagged, shows the Finch alert and
- * resolves false. If the moderation service is unreachable the check is skipped so the school
- * can keep working; the failure is logged.
- */
 export async function passesModeration(texts) {
   const list = (Array.isArray(texts) ? texts : [texts]).map((t) => String(t ?? "").trim()).filter(Boolean);
   if (!list.length) return true;

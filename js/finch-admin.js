@@ -17,7 +17,6 @@ let pdfjsPromise = null;
 function loadPdfJs() {
   pdfjsPromise ||= (async () => {
     const lib = await import(`${PDFJS_BASE}pdf.min.mjs`);
-    // Load the worker through a blob URL so it works from a cross-origin CDN.
     const workerSource = await (await fetch(`${PDFJS_BASE}pdf.worker.min.mjs`)).text();
     lib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([workerSource], { type: "text/javascript" }));
     return lib;
@@ -115,7 +114,6 @@ async function buildPdfEntries(file, category, titleOverride) {
   }));
 }
 
-// Groups chunk documents back into one row per uploaded PDF; text entries stay one row each.
 function groupEntries(snapshot) {
   const groups = new Map();
   for (const entryDoc of snapshot.docs) {

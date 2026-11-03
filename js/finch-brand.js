@@ -1,5 +1,3 @@
-// Finch brand mark: a minimalist bird head with a leaf crest. Static markup only.
-// `color` tints the bird; `--finch-eye` is the eye / leaf-vein colour (set it to the background).
 const FINCH_SVG = `
 <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
   <path fill="currentColor" d="M14.5 5.2C14.9 2.6 17.6 1.2 21 1.6c.3 3.2-1.6 5.7-4.7 6.3a9 9 0 0 1 3.2.8z"/>

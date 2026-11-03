@@ -1,4 +1,3 @@
-// Onboarding guide generator: fills templates/onboarding-template.html with a school's name and join code.
 const TEMPLATE_URL = "templates/onboarding-template.html";
 const LOGO_URL = "image/fitchLogo.png";
 const BRAND_GREEN = "#275747";
@@ -12,13 +11,11 @@ function escapeHtml(value) {
   })[char]);
 }
 
-// Replaces every {{key}} with its escaped value; unknown placeholders are left untouched.
 export function fillTemplate(template, values) {
   return template.replace(/\{\{(\w+)\}\}/g, (match, key) =>
     Object.hasOwn(values, key) ? escapeHtml(values[key]) : match);
 }
 
-// The logo asset is cream on transparent; repaint it in brand green and inline it as a data URL.
 async function loadGreenLogo() {
   const response = await fetch(LOGO_URL);
   if (!response.ok) throw new Error("Could not load the Fitch logo.");
@@ -66,7 +63,6 @@ function loadScript(src, isReady) {
   });
 }
 
-// Candidate page-break positions (bottom edges of blocks, in CSS px relative to the guide).
 function breakPoints(guide) {
   const top = guide.getBoundingClientRect().top;
   return [...guide.querySelectorAll(":scope > *, li, .card")]
@@ -74,7 +70,6 @@ function breakPoints(guide) {
     .sort((a, b) => a - b);
 }
 
-// Renders the guide inside an isolated iframe (so the site's CSS can't interfere), then saves a PDF.
 export async function downloadOnboardingGuide(school) {
   const [{ html, code }] = await Promise.all([
     renderOnboardingGuide(school),
@@ -93,8 +88,6 @@ export async function downloadOnboardingGuide(school) {
       doc.fonts.load(`400 14px "DM Sans"`)
     ]).catch(() => {});
     await doc.fonts.ready;
-    // html2canvas fails to paint the text inside the code box, so draw the label and code onto
-    // a canvas ourselves and swap in the image (images capture reliably).
     const codeBox = doc.querySelector(".code-box");
     if (codeBox) {
       const dpr = 3;
@@ -126,8 +119,6 @@ export async function downloadOnboardingGuide(school) {
       codeBox.style.padding = "6px 14px";
     }
     const flatten = doc.createElement("style");
-    // html2canvas can't measure the variable Bricolage font (words collapse together), so the
-    // capture uses DM Sans for every element.
     flatten.textContent = "* { font-family: 'DM Sans', system-ui, sans-serif !important; letter-spacing: 0 !important; word-spacing: normal !important; font-optical-sizing: none !important; font-kerning: none !important; font-variation-settings: normal !important; } h1, h2, h3, .brand-name { font-weight: 700 !important; }";
     doc.head.append(flatten);
     doc.querySelector(".no-print")?.remove();

@@ -26,10 +26,8 @@ import { SITE_OWNER_EMAIL, trackActivityResult } from "./activity-tracker.js";
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
-// Keep track of the currently logged-in organizer
 let currentUser = null;
 
-// UI elements
 const roleSelect = document.getElementById("roleSelect");
 const studentSection = document.getElementById("studentSection");
 const organizerSection = document.getElementById("organizerSection");
@@ -52,8 +50,6 @@ const savedStudentSchoolsKey = "savedStudentSchools";
 const emailLinkStorageKey = "emailForSignIn";
 let authMessage = "";
 
-// Prefill the display-name field with the last name this device used, so returning
-// students do not need to retype it (and do not get a new generated name).
 const studentDisplayNameInput = document.getElementById("studentDisplayNameInput");
 if (studentDisplayNameInput) {
   const existingStudentName = localStorage.getItem("studentName");
@@ -77,7 +73,6 @@ async function openSchool(schoolId, schoolName, studentName = null) {
     }
 
     const school = schoolSnapshot.data();
-    // In non-required mode, keep the student's previously saved display name as-is.
     let displayName = studentName;
     if (school.features?.studentEmailRequired === true) {
       const domain = school.studentEmailDomain || "";
@@ -111,7 +106,6 @@ function getSavedStudentSchools() {
   try {
     const saved = JSON.parse(localStorage.getItem(savedStudentSchoolsKey) || "[]");
     if (!Array.isArray(saved)) return [];
-    // Keep each school's own saved display name; never regenerate or overwrite it here.
     const sanitized = saved.filter((school) =>
       school
       && typeof school.schoolId === "string"
@@ -335,7 +329,6 @@ onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
 });
 
-// UI Toggle between Student and Organizer views
 roleSelect?.addEventListener("change", (e) => {
   if (!currentUser && e.target.value === "organizer") {
     showModal("Sign in required", "Please sign in with Google before creating a school.");
@@ -456,7 +449,6 @@ signOutBtn?.addEventListener("click", async () => {
   }
 });
 
-// 1. Organizer creates school and links it to their Auth UID
 const createSchoolBtn = document.getElementById("createSchoolBtn");
 createSchoolBtn?.addEventListener("click", async () => {
   if (!currentUser) {
@@ -474,7 +466,6 @@ createSchoolBtn?.addEventListener("click", async () => {
   }
   const createSchoolStatus = document.getElementById("createSchoolStatus");
 
-  // Generate random 5-char code
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
   for (let i = 0; i < 5; i++) {
@@ -527,7 +518,6 @@ createSchoolBtn?.addEventListener("click", async () => {
   }
 });
 
-// 2. Student joins school using code
 const joinSchoolBtn = document.getElementById("joinSchoolBtn");
 joinSchoolBtn?.addEventListener("click", async () => {
   const joinCodeInput = document.getElementById("joinCodeInput");

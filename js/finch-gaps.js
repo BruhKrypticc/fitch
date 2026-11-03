@@ -25,10 +25,6 @@ export function groupGaps(entries) {
   return [...groups.values()].sort((a, b) => b.count - a.count);
 }
 
-/**
- * "Finch gaps": questions Finch could not answer, ranked by how often they were asked.
- * Only the organizer can turn a gap into a knowledge-base entry.
- */
 export function mountFinchGaps(root, { schoolId, isOwner }) {
   root.replaceChildren();
   root.classList.add("xl-module");

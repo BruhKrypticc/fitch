@@ -3,9 +3,8 @@ import { db } from "./firebase.js";
 import { createFinchAvatar } from "./finch-brand.js";
 import { isCleanSilently } from "./moderation.js";
 
-// Set after deploying workers/gemini/. The Gemini key lives only in that worker.
 export const FINCH_PROXY_URL = "https://finch.krypticc.com";
-const MODEL = "gemini-3.1-flash-lite"; // gemini-2.5-flash returns 404 for new API keys
+const MODEL = "gemini-3.1-flash-lite";
 const MAX_QUERY_LENGTH = 500;
 const MAX_SNIPPETS = 8;
 const SNIPPET_CHARS = 900;
@@ -20,11 +19,9 @@ let ai = null;
 let context = { schoolId: null, schoolName: "your school", instructions: "", flags: {} };
 let knowledgeCache = { schoolId: null, loadedAt: 0, entries: [] };
 
-// The SDK is loaded on the first question so it never slows down page load.
 async function getClient() {
   if (!ai) {
     const { GoogleGenAI } = await import("https://esm.run/@google/genai@2.32.0");
-    // The key is injected server-side by the proxy; this placeholder only satisfies the SDK.
     ai = new GoogleGenAI({ apiKey: "proxied", httpOptions: { baseUrl: FINCH_PROXY_URL } });
   }
   return ai;
@@ -59,8 +56,6 @@ function formatDate(timestamp) {
   return date ? date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "";
 }
 
-// Pulls every school source Finch may ground answers in: the knowledge base (admin text and
-// PDF chunks), the school profile, and official announcements. Each source fails independently.
 async function loadKnowledgeBase() {
   const { schoolId } = context;
   if (knowledgeCache.schoolId === schoolId && Date.now() - knowledgeCache.loadedAt < KB_CACHE_MS) {
@@ -184,8 +179,6 @@ function buildSystemPrompt() {
   ].join("\n");
 }
 
-// Only genuine, school-related questions are logged. Anything flagged, off-topic, abusive or
-// like a prompt-injection attempt is dropped so organizers see real gaps, not noise.
 const NOISE = /ignore (all |any |the |your )?(previous|prior|above)|system prompt|jailbreak|pretend (to be|you)|you are now|\b(sex|porn|nude|kill myself|suicide)\b/i;
 const SCHOOL_HINT = /\b(school|class|classes|teacher|teachers|homework|grade|grades|bus|lunch|schedule|bell|period|club|clubs|sport|sports|team|tryout|practice|game|exam|test|quiz|finals|midterm|schedul\w*|calendar|holiday|break|early|dismissal|pickup|pick-up|attendance|absent|late|dress|uniform|policy|rule|rules|locker|library|gym|cafeteria|office|counselor|principal|nurse|dance|prom|event|events|trip|field|form|forms|permission|fee|fees|ticket|tickets|registration|sign ?up|deadline|due|when|where|what time|how do i|how can i|who|room|map|wifi|chromebook|laptop|schoology|canvas|powerschool|credit|credits|graduat\w*|college|ap|honors|elective|course|courses|senior|junior|sophomore|freshman|student council|officer|fundrais\w*)\b/i;
 const gapLogged = new Set();
@@ -240,7 +233,6 @@ function el(tag, className, text) {
   return node;
 }
 
-// Safe inline markdown (bold, italic, code) built from DOM nodes, never innerHTML.
 function appendInline(parent, text) {
   const pattern = /(\*\*|__)(.+?)\1|`([^`]+)`|(\*|_)([^*_\s][^*_]*?)\4/g;
   let last = 0;
@@ -400,8 +392,6 @@ function buildWidget() {
     log.append(chips);
   };
 
-  // On phones the drawer becomes a bottom sheet; track the visual viewport so the
-  // on-screen keyboard never covers the input.
   const viewport = window.visualViewport;
   const syncViewport = () => {
     if (!viewport || !root.classList.contains("is-open")) return;
@@ -441,7 +431,6 @@ function buildWidget() {
     } else if (!wasOpen || reduceMotion.matches) {
       finishClose();
     } else {
-      // Let the exit animation play before the drawer is actually hidden.
       root.classList.add("is-closing");
       closeTimer = window.setTimeout(finishClose, 220);
     }
@@ -455,7 +444,6 @@ function buildWidget() {
   drawer.addEventListener("keydown", (event) => {
     if (event.key === "Escape") setOpen(false);
   });
-  // Tapping the dimmed backdrop closes the mobile sheet.
   backdrop.addEventListener("click", () => setOpen(false));
 
   form.addEventListener("submit", (event) => {
@@ -473,7 +461,6 @@ export async function initFinch({ schoolId = localStorage.getItem("schoolId"), s
   context = { schoolId, schoolName: schoolName || "your school", instructions: "", flags: {} };
   const widget = buildWidget();
 
-  // Finch stays hidden until an organizer has explicitly enabled it.
   onSnapshot(doc(db, "schools", schoolId, "settings", "ai_config"), (snapshot) => {
     const config = snapshot.exists() ? snapshot.data() : {};
     context.instructions = typeof config.instructions === "string" ? config.instructions : "";

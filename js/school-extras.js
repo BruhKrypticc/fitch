@@ -5,7 +5,6 @@ import { watchSchoolFlags } from "./school-flags.js";
 import { mountPolls } from "./polls.js";
 import { mountDocumentLocker } from "./documents.js";
 
-// Student page and mobile app: Polls and Documents tabs, gated by the organizer's toggles.
 const schoolId = localStorage.getItem("schoolId");
 const byId = (id) => document.getElementById(id);
 
@@ -19,7 +18,6 @@ if (schoolId) {
   let pollsKey = "";
   let stopDocs = null;
 
-  // Tab buttons and panels are shown/hidden by each page's own tab logic; this only gates the buttons.
   const isMobile = Boolean(byId("mTabbar"));
   const tabButton = (name) => document.querySelector(isMobile ? `.m-tab[data-tab="${name}"]` : `.school-tab[data-tab="${name}"]`);
 

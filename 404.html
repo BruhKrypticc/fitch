@@ -42,7 +42,6 @@
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    /* Faint ruled notebook paper with a red margin line */
     body::before {
       content: "";
       position: fixed;
@@ -57,7 +56,6 @@
       animation: fade-in 1.2s ease backwards;
     }
 
-    /* ---------- Corner vines ---------- */
     .vine {
       position: fixed;
       z-index: 0;
@@ -88,14 +86,11 @@
 
     .vein { stroke: var(--paper); stroke-opacity: 0.72; stroke-width: 1.5; stroke-linecap: round; fill: none; }
 
-    /* Dashes exist only while drawing, so the finished stroke is solid and seamless */
     @keyframes draw { from { stroke-dasharray: 1 2; stroke-dashoffset: 1; } to { stroke-dasharray: 1 2; stroke-dashoffset: 0; } }
     @keyframes sprout { from { transform: scale(0) rotate(-25deg); opacity: 0; } }
-    /* Idle loops start and end at rest (0deg) so they hand off from the entrance without a snap */
     @keyframes sway { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-2.2deg); } 70% { transform: rotate(2.4deg); } }
     @keyframes fade-in { from { opacity: 0; } }
 
-    /* ---------- Layout ---------- */
     .brand-bar {
       position: relative;
       z-index: 3;
@@ -134,7 +129,6 @@
       text-align: center;
     }
 
-    /* ---------- Hall pass ---------- */
     .pass-wrap {
       position: absolute;
       top: 0;
@@ -222,7 +216,6 @@
     @keyframes swing { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-4.5deg); } 75% { transform: rotate(4.5deg); } }
     @keyframes stamp { from { transform: rotate(-12deg) scale(2.6); opacity: 0; } }
 
-    /* ---------- 404 numerals ---------- */
     .numerals {
       display: flex;
       align-items: center;
@@ -247,7 +240,6 @@
 
     @keyframes plant-sway { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
 
-    /* ---------- Copy ---------- */
     .eyebrow {
       min-height: 1.4em;
       margin: 22px 0 0;
@@ -335,7 +327,6 @@
       animation: rise-soft 0.9s 1.9s ease backwards;
     }
 
-    /* ---------- Falling leaves ---------- */
     .leaf {
       position: fixed;
       top: 0;
@@ -357,7 +348,6 @@
     }
     @keyframes flutter { from { transform: rotateY(-55deg) rotateZ(-14deg); } to { transform: rotateY(55deg) rotateZ(14deg); } }
 
-    /* ---------- Small screens ---------- */
     @media (max-width: 959px) {
       .pass-wrap {
         position: relative;
@@ -457,7 +447,6 @@
       var rand = function (a, b) { return a + Math.random() * (b - a); };
       var pick = function (list) { return list[Math.floor(Math.random() * list.length)]; };
 
-      // Hall pass details (textContent only, so the URL can't inject markup)
       var path = decodeSafe(location.pathname + location.search) || "/";
       document.getElementById("passPath").textContent = path;
       document.getElementById("passPath").title = path;
@@ -466,7 +455,6 @@
 
       if (reduced) return;
 
-      // "Page not found" rotating through languages, like the home page eyebrow
       var phrases = [
         { lang: "en", text: "Page not found" },
         { lang: "es", text: "Página no encontrada" },
@@ -491,7 +479,6 @@
         }, 350);
       }, 2800);
 
-      // Ambient falling leaves
       var count = window.innerWidth < 600 ? 9 : 16;
       for (var n = 0; n < count; n++) {
         var el = document.createElement("div");

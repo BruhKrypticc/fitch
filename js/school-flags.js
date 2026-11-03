@@ -1,8 +1,6 @@
 import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { db } from "./firebase.js";
 
-// Operational toggles stored in schools/{id}/settings/ai_config. Anything an organizer has
-// not switched off stays on, so schools that predate these toggles keep working.
 export const FLAG_DEFAULTS = Object.freeze({
   pollsEnabled: true,
   documentLockerEnabled: true,

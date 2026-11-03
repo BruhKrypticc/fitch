@@ -34,10 +34,6 @@ function safeUrl(value) {
   }
 }
 
-/**
- * Renders the Document Locker into `root`.
- * `manager` is null for read-only viewers, or { uid, isOwner, name } for organizers/officers.
- */
 export function mountDocumentLocker(root, { schoolId, manager = null }) {
   root.replaceChildren();
   root.classList.add("xl-module");

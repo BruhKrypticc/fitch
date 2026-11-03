@@ -1102,7 +1102,6 @@ input[type="color"] {
 
 
 
-/* Keep the feature content below a dedicated, vertically centered landing screen. */
 .landing-page.container {
   display: flex;
   flex-direction: column;
@@ -2296,7 +2295,6 @@ body.landing-body {
   }
 }
 
-/* Dashboard pages use a quieter layout than the landing page. */
 .dashboard-page {
   display: block;
   min-height: 100vh;
@@ -2865,7 +2863,6 @@ body.landing-body {
   }
 }
 
-/* Fitch's shared visual language: paper, ink, one green accent, and clear space. */
 body {
   background: var(--paper);
   background-image: none;
@@ -4390,7 +4387,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   border-radius: 50%;
 }
 
-/* Landing revamp: flat surfaces, consistent button rhythm */
 .landing-page .corner-leaf, .landing-body .corner-leaf { display: none; }
 
 .landing-entry {
@@ -4476,7 +4472,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   }
 }
 
-/* Features: solid, no translucency, no blur reveal */
 .features-section .feature-grid {
   gap: 0 clamp(24px, 5vw, 64px);
   border-top: 1px solid rgba(230, 240, 228, 0.28);
@@ -4514,7 +4509,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   .features-section .feature-card { padding-right: 0; }
 }
 
-/* Home form spacing */
 .landing-entry .form-panel > .form-group + #joinSchoolBtn,
 .landing-entry .form-panel > .form-group + #createSchoolBtn,
 .landing-entry .form-panel > #joinSchoolBtn,
@@ -4526,7 +4520,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 .landing-entry #joinSchoolBtn .button-arrow,
 .landing-entry #createSchoolBtn .button-arrow { margin-left: 2px; }
 
-/* How it works: sticky scroll progression */
 .how-section {
   position: relative;
   height: 280vh;
@@ -4731,7 +4724,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 
 .landing-page.container { overflow: visible; }
 
-/* ===== How it works: dark band ===== */
 .how-section {
   isolation: isolate;
   height: 180vh;
@@ -4751,7 +4743,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   transform: translateX(-50%);
 }
 
-/* Corner vines live in a viewport-sized sticky layer; the stem draws in and leaves sprout as you scroll */
 .how-corners {
   position: sticky;
   z-index: -1;
@@ -4776,12 +4767,10 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 
 .how-stem {
   stroke-dasharray: 1;
-  /* stroke-dashoffset needs a length; a unitless calc() is invalid, which left the stem fully drawn */
   stroke-dashoffset: calc((1 - clamp(0, var(--how-grow, 0) * 1.25, 1)) * 1px);
   transition: stroke-dashoffset 0.25s ease-out;
 }
 
-/* --s is the scroll progress at which the stem reaches this leaf (plus a small beat), so leaves sprout after the stem passes */
 .how-sprout {
   transform-box: fill-box;
   transform-origin: var(--ox, 100%) 100%;
@@ -4907,7 +4896,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 .how-feed li { opacity: 0; transform: translateX(-10px); transition: opacity 0.4s ease, transform 0.4s ease; }
 .how-feed li.is-in { opacity: 1; transform: none; }
 
-/* ===== Features: back to light ===== */
 .features-section { color: var(--ink); margin-top: 0; padding-top: clamp(64px, 8vw, 100px); }
 .features-section::before { display: none; }
 .features-section .eyebrow { color: var(--primary); }
@@ -4942,7 +4930,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   .how-steps li::before { background: rgba(230, 240, 228, 0.22); }
 }
 
-/* ===== How it works: type, leaves, mini dashboard ===== */
 .how-sticky { position: sticky; }
 .how-head .eyebrow { font-family: var(--body-font); }
 .how-sticky h2,
@@ -5031,7 +5018,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 .how-feed-icon svg { width: 17px; height: 17px; }
 .how-feed li b { display: block; margin: 0 0 2px; color: var(--primary); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
 
-/* Tighter home buttons */
 .landing-entry .form-panel > * + * { margin-top: 14px; }
 .landing-entry .form-panel > #joinSchoolBtn,
 .landing-entry .form-panel > #createSchoolBtn,
@@ -5053,7 +5039,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
 
 .how-left { justify-content: flex-start; }
 
-/* ===== How it works: playful touches ===== */
 @keyframes how-pop {
   0% { transform: scale(0.85); }
   55% { transform: scale(1.1) rotate(-1.5deg); }
@@ -5126,7 +5111,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   .how-cursor, .how-avatars i { transition: none; }
 }
 
-/* How it works: progress bars with a travelling marker instead of leaves */
 .how-leaf { display: none; }
 .how-progress span {
   height: 4px;
@@ -5162,7 +5146,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   transform: translate(-50%, -50%) scale(1.15);
 }
 
-/* ===== Student dashboard: match the admin dashboard look ===== */
 .student-dashboard-page {
   --line: color-mix(in srgb, #dfe4df 86%, var(--primary) 14%);
   --surface: #ffffff;
@@ -5393,13 +5376,11 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   .student-dashboard-page .student-content-section { padding: 18px; }
 }
 
-/* ===== Comic-style hand-drawn marks ===== */
 .landing-page .intro h1 span {
   padding-bottom: 0.08em;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='9' viewBox='0 0 28 9' fill='none'%3E%3Cpath d='M0 4.5Q7 0 14 4.5T28 4.5' stroke='%23c4928b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 100% / 28px 9px;
 }
 
-/* Squiggle draws in left to right, then keeps flowing like a wave */
 .landing-page .intro h1 span {
   animation: squiggle-draw 0.9s ease-out 0.5s both, squiggle-flow 1.6s linear infinite;
 }
@@ -5417,7 +5398,6 @@ body.admin-dashboard-page .dashboard-header button.secondary-button:not(.school-
   .landing-page .intro h1 span { animation: none; }
 }
 
-/* ---- Mobile / native-app optimizations ---- */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
 body { overscroll-behavior-y: none; }
 button, a, input, select, textarea, [role="button"], .school-tabs * { touch-action: manipulation; }
@@ -5430,7 +5410,6 @@ button, a, input, select, textarea, [role="button"], .school-tabs * { touch-acti
   }
   .brand-bar, .dashboard-header { padding-top: max(0.75rem, env(safe-area-inset-top)); }
 
-  /* 16px inputs stop iOS from zooming on focus; 44px meets touch-target guidance */
   input, select, textarea { font-size: 16px !important; min-height: 44px; }
   button, .btn, [role="button"] { min-height: 44px; }
 
@@ -5459,7 +5438,6 @@ button, a, input, select, textarea, [role="button"], .school-tabs * { touch-acti
   body { min-height: 100dvh; }
 }
 
-/* Featured COPPA card: centered under the grid with a subtle green glow */
 .features-section .feature-card:nth-child(5):last-child {
   grid-column: 1 / -1;
   justify-self: center;

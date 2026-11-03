@@ -4,7 +4,6 @@ import { watchSchoolFlags } from "./school-flags.js";
 import { mountPolls } from "./polls.js";
 import { mountDocumentLocker } from "./documents.js";
 
-// Admin page: Polls and Documents management for organizers and officers.
 export function initAdminExtras({ schoolId, user, isOrganizer }) {
   const manager = {
     uid: user.uid,

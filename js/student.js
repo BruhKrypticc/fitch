@@ -57,7 +57,6 @@ if (!schoolId || !schoolName) {
     throw new Error("This school requires an approved school Google account.");
   }
   try {
-    // In non-required mode, reuse the name the student already saved; never regenerate it.
     studentName = school.features?.studentEmailRequired === true && initialUser
       ? await getStudentAccountAlias(db, schoolId, initialUser.uid)
       : (localStorage.getItem("studentName") || "").trim();
@@ -276,7 +275,6 @@ if (!schoolId || !schoolName) {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       try {
-        // In non-required mode, keep the already-loaded/stored name; do not regenerate it.
         studentName = currentFeatures.studentEmailRequired === true
           ? await getStudentAccountAlias(db, schoolId, user.uid)
           : (localStorage.getItem("studentName") || studentName).trim();

@@ -15,7 +15,6 @@ function el(tag, className, text) {
   return node;
 }
 
-// Without school mode there is no sign-in, so a per-browser id is the best available limit.
 export function getDeviceVoterId() {
   let id = localStorage.getItem(DEVICE_KEY);
   if (!/^d_[a-z0-9]{20}$/.test(id || "")) {
@@ -26,7 +25,6 @@ export function getDeviceVoterId() {
   return id;
 }
 
-// Rounded check badge drawn as inline SVG so it renders the same on every platform.
 function checkIcon() {
   const icon = el("span", "xl-check");
   icon.setAttribute("role", "img");
@@ -35,7 +33,6 @@ function checkIcon() {
   return icon;
 }
 
-// Text shown in the reader's language via the MyMemory layer; the original is kept for re-translation.
 function tr(node, text) {
   node.dataset.original = text;
   const lang = currentLanguage();
@@ -63,13 +60,6 @@ async function deletePollWithVotes(schoolId, pollId) {
   await deleteDoc(doc(db, "schools", schoolId, "polls", pollId));
 }
 
-/**
- * Renders class office polls into `root`.
- * `manager` is null for students, or { uid, name, isOwner } for organizers/officers who may create polls.
- * Only organizers (isOwner) may delete polls.
- * `voting` is { schoolMode, uid } for students. In school mode a verified Google school account
- * is required (one vote per account); otherwise one vote per device.
- */
 export function mountPolls(root, { schoolId, manager = null, voting = { schoolMode: false, uid: null } }) {
   root.replaceChildren();
   root.classList.add("xl-module");

@@ -1,5 +1,4 @@
-﻿// Web app setup (mobile browsers only, hidden once installed)
-(function initSetup() {
+﻿(function initSetup() {
   const ua = navigator.userAgent;
   const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const isAndroid = /Android/i.test(ua);

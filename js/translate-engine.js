@@ -1,6 +1,5 @@
 import { FINCH_PROXY_URL } from "./finch.js";
 
-// Shared translation engine: Gemini through the existing Finch worker, MyMemory as fallback.
 const GEMINI_URL = `${FINCH_PROXY_URL}/v1beta/models/gemini-3.1-flash-lite:generateContent`;
 const TIMEOUT_MS = 15000;
 const MAX_CONCURRENT = 4;
@@ -37,14 +36,13 @@ function saveToStore(key, value) {
     const keys = Object.keys(store);
     for (const old of keys.slice(0, Math.max(0, keys.length - STORE_MAX_ENTRIES))) delete store[old];
     localStorage.setItem(STORE_KEY, JSON.stringify(store));
-  } catch { /* storage full or unavailable; the in-memory cache still works */ }
+  } catch { }
 }
 
 function cacheKey(text, lang) {
   return `${lang}::${text}`;
 }
 
-// Limits parallel requests so translating a whole page does not burst the shared Gemini quota.
 function limited(task) {
   return new Promise((resolve, reject) => {
     const run = () => {

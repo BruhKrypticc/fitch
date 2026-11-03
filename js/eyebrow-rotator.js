@@ -14,7 +14,6 @@ if (eyebrow) {
   let index = 0;
 
   eyebrow.classList.add("eyebrow-line--rotating");
-  // Screen readers get the stable English label instead of a changing one.
   eyebrow.setAttribute("aria-label", phrases[0].text);
 
   const showNext = () => {
