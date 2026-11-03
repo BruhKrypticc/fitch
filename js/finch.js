@@ -1,6 +1,7 @@
-import { doc, collection, getDoc, getDocs, limit, onSnapshot, orderBy, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, collection, addDoc, getDoc, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { db } from "./firebase.js";
 import { createFinchAvatar } from "./finch-brand.js";
+import { isCleanSilently } from "./moderation.js";
 
 // Set after deploying workers/gemini/. The Gemini key lives only in that worker.
 export const FINCH_PROXY_URL = "https://finch.krypticc.com";
@@ -183,13 +184,40 @@ function buildSystemPrompt() {
   ].join("\n");
 }
 
+// Only genuine, school-related questions are logged. Anything flagged, off-topic, abusive or
+// like a prompt-injection attempt is dropped so organizers see real gaps, not noise.
+const NOISE = /ignore (all |any |the |your )?(previous|prior|above)|system prompt|jailbreak|pretend (to be|you)|you are now|\b(sex|porn|nude|kill myself|suicide)\b/i;
+const SCHOOL_HINT = /\b(school|class|classes|teacher|teachers|homework|grade|grades|bus|lunch|schedule|bell|period|club|clubs|sport|sports|team|tryout|practice|game|exam|test|quiz|finals|midterm|schedul\w*|calendar|holiday|break|early|dismissal|pickup|pick-up|attendance|absent|late|dress|uniform|policy|rule|rules|locker|library|gym|cafeteria|office|counselor|principal|nurse|dance|prom|event|events|trip|field|form|forms|permission|fee|fees|ticket|tickets|registration|sign ?up|deadline|due|when|where|what time|how do i|how can i|who|room|map|wifi|chromebook|laptop|schoology|canvas|powerschool|credit|credits|graduat\w*|college|ap|honors|elective|course|courses|senior|junior|sophomore|freshman|student council|officer|fundrais\w*)\b/i;
+const gapLogged = new Set();
+const MAX_GAPS_PER_SESSION = 5;
+
+async function logGap(question) {
+  if (!context.schoolId || gapLogged.size >= MAX_GAPS_PER_SESSION) return;
+  const cleaned = question
+    .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, "[email]")
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[number]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
+  const key = cleaned.toLowerCase();
+  if (cleaned.split(" ").length < 3 || cleaned.length < 12 || gapLogged.has(key)) return;
+  if (NOISE.test(cleaned) || !SCHOOL_HINT.test(cleaned)) return;
+  if (!await isCleanSilently(cleaned)) return;
+  gapLogged.add(key);
+  addDoc(collection(db, "schools", context.schoolId, "finch_gaps"), { question: cleaned, createdAt: serverTimestamp() })
+    .catch((error) => console.warn("Could not log unanswered question:", error.code || error));
+}
+
 export async function askFinch(studentQuery) {
   const query = String(studentQuery ?? "").trim().slice(0, MAX_QUERY_LENGTH);
   if (!query) return FALLBACK_REPLY;
   if (!context.schoolId) throw new Error("Finch is not initialized for a school.");
 
   const snippets = retrieveSnippets(query, await loadKnowledgeBase());
-  if (!snippets.length) return FALLBACK_REPLY;
+  if (!snippets.length) {
+    logGap(query);
+    return FALLBACK_REPLY;
+  }
 
   const schoolData = snippets
     .map((snippet, index) => `[${index + 1}] ${snippet.source}${snippet.category ? ` (${snippet.category})` : ""}\n${snippet.text}`)
@@ -200,7 +228,9 @@ export async function askFinch(studentQuery) {
     contents: `<school_data>\n${schoolData}\n</school_data>\n\nStudent question: ${query}`,
     config: { systemInstruction: buildSystemPrompt(), temperature: 0.2, maxOutputTokens: 1500 }
   });
-  return response.text?.trim() || FALLBACK_REPLY;
+  const reply = response.text?.trim();
+  if (!reply || reply === FALLBACK_REPLY) logGap(query);
+  return reply || FALLBACK_REPLY;
 }
 
 function el(tag, className, text) {

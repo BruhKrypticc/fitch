@@ -23,6 +23,8 @@ import { applySchoolLogo, applySchoolTheme } from "./school-theme.js";
 import { toGoogleCalendarEmbedUrl } from "./calendar.js";
 import { openPhotoPreview, uploadPhoto } from "./photo-utils.js";
 import { initFinchAdmin } from "./finch-admin.js";
+import { mountFinchGaps } from "./finch-gaps.js";
+import { parentLink } from "./languages.js";
 import { initAdminExtras } from "./admin-extras.js";
 import { downloadOnboardingGuide, openOnboardingGuide } from "./onboarding.js";
 
@@ -193,6 +195,17 @@ if (!schoolId || !schoolName) {
     if (schoolLoaded) void verifySchoolAccess();
   });
 
+  document.getElementById("parentLinkCopy")?.addEventListener("click", async (event) => {
+    const input = document.getElementById("parentLinkInput");
+    try {
+      await navigator.clipboard.writeText(input.value);
+      event.target.textContent = "Copied";
+    } catch {
+      input.select();
+    }
+    setTimeout(() => { event.target.textContent = "Copy link"; }, 1500);
+  });
+
   function configureOfficerManagement() {
     officerManagementPanel.hidden = !isOrganizer;
     schoolSettingsPanel.hidden = !isOrganizer;
@@ -201,6 +214,7 @@ if (!schoolId || !schoolName) {
     if (isOrganizer && !finchAdminStarted) {
       finchAdminStarted = true;
       initFinchAdmin(schoolId);
+      mountFinchGaps(document.getElementById("finchGapsRoot"), { schoolId, isOwner: true });
     }
     if (isOrganizer && !officerListenersStarted) {
       officerListenersStarted = true;
@@ -773,6 +787,7 @@ if (!schoolId || !schoolName) {
     schoolOwnerUid = school.createdBy || null;
     schoolNameHeading.textContent = school.name || schoolName;
     joinCode.textContent = school.joinCode || "Unavailable";
+    document.getElementById("parentLinkInput").value = parentLink(schoolId);
     const theme = school.theme && typeof school.theme === "object" ? school.theme : {};
     applySchoolTheme(theme);
     schoolTagline.textContent = typeof theme.customTagline === "string" && theme.customTagline.trim()

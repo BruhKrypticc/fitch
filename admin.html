@@ -66,6 +66,13 @@
         <button id="onboardingDownloadBtn" class="secondary-button" type="button">Download PDF</button>
       </div>
       <p id="onboardingStatus" class="field-hint" role="status" aria-live="polite"></p>
+      <div class="parent-link-row">
+        <label class="field-hint" for="parentLinkInput">Family link (no login, 13 languages)</label>
+        <div class="onboarding-actions">
+          <input id="parentLinkInput" type="text" readonly>
+          <button id="parentLinkCopy" class="secondary-button" type="button">Copy link</button>
+        </div>
+      </div>
     </section>
     <p id="announcementsDisabledNotice" class="announcement-disabled-notice" role="status" hidden>
       Announcements are hidden from students. Turn on Announcements in Settings to show them on the student board.
@@ -154,6 +161,7 @@
     <section id="documentsTab" class="tab-panel" data-tab-panel="documents" hidden><div id="documentsRoot"></div></section>
 
     <section id="finchTab" class="tab-panel" data-tab-panel="finch" hidden>
+      <section class="settings-card"><div id="finchGapsRoot"></div></section>
       <section class="settings-card" aria-labelledby="finchKbTitle">
         <div class="settings-section-heading">
           <span class="settings-section-number finch-brand-badge" aria-hidden="true"></span>

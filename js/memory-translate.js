@@ -1,5 +1,6 @@
-// Shared MyMemory translation layer. Reads the language the user picked on the current page.
-const cache = new Map();
+// Language-selection layer over the shared translation engine (js/translate-engine.js).
+import { getCachedTranslation, translate } from "./translate-engine.js";
+
 const listeners = new Set();
 
 // Student page uses a <select>; the mobile app uses radio pills. Admin has neither (English).
@@ -36,28 +37,7 @@ function notifyAfterClick(event) {
 }
 
 export function cachedTranslation(text, lang) {
-  return cache.get(`${lang}::${text}`);
+  return getCachedTranslation(text, lang);
 }
 
-export async function translateText(text, lang) {
-  if (!text || lang === "en") return text;
-  const key = `${lang}::${text}`;
-  if (cache.has(key)) return cache.get(key);
-  const chunks = text.match(/[\s\S]{1,450}(?:\s|$)|[\s\S]+/g) || [text];
-  const parts = [];
-  for (const chunk of chunks) {
-    if (!chunk.trim()) { parts.push(chunk); continue; }
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=en|${lang}&de=studenthub@example.com`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Translation failed (${response.status}).`);
-    const data = await response.json();
-    const translated = data?.responseData?.translatedText;
-    if (typeof translated !== "string" || data.responseStatus >= 400) {
-      throw new Error(data?.responseDetails || "Translation failed.");
-    }
-    parts.push(translated);
-  }
-  const result = parts.join("");
-  cache.set(key, result);
-  return result;
-}
+export const translateText = translate;

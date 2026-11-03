@@ -221,6 +221,18 @@ service cloud.firestore {
         }
       }
 
+      // Questions Finch could not answer, logged anonymously for organizers.
+      match /finch_gaps/{gapId} {
+        allow get, list: if schoolAdmin(schoolId);
+        allow create: if request.resource.data.keys().hasOnly(['question', 'createdAt'])
+          && request.resource.data.question is string
+          && request.resource.data.question.size() >= 3
+          && request.resource.data.question.size() <= 200
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if schoolAdmin(schoolId);
+      }
+
       match /knowledge_base/{entryId} {
         allow get, list: if true;
         allow create: if schoolOwner(schoolId)

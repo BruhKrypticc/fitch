@@ -37,7 +37,11 @@
       {
         "source": "/activity",
         "destination": "/activity.html"
-      }
+      },
+      {
+          "source": "/parent",
+          "destination": "/parent.html"
+        }
     ],
     "headers": [
       {
